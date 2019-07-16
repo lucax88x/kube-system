@@ -1,0 +1,11 @@
+{
+  "name": "kube-system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:lucax88x/kube-system.git",
+  "author": "lucatrazzi <luca.trazzi@garaio.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "vagrant up"
+  }
+}
