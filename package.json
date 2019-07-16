@@ -6,6 +6,11 @@
   "author": "lucatrazzi <luca.trazzi@garaio.com>",
   "license": "MIT",
   "scripts": {
-    "start": "vagrant up"
+    "start": "vagrant up",
+    "up": "yarn start",
+    "stop": "vagrant destroy -f",
+    "down": "yarn stop",
+    "ssh": "vagrant ssh k8s-master",
+    "ip": "bash ./scripts/vagrant.get-ips.sh"
   }
 }
