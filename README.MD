@@ -19,5 +19,13 @@ kubectl proxy --address 0.0.0.0 --accept-hosts .*
 [link](https://github.com/kubernetes/dashboard/wiki/Access-control#login-view)
 
 ```shell
+yarn ssh
+
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+```
+
+## how to login to registry
+
+```shell
+docker login localhost:5000 --username admin --password 111999888
 ```

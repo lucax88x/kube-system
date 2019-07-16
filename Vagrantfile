@@ -1,8 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-K8S_IMAGE_NAME = "ubuntu/xenial64"
-REGISTRY_IMAGE_NAME = "phusion/ubuntu-14.04-amd64"
+K8S_IMAGE_NAME = "ubuntu/xenial64" #16.04
+REGISTRY_IMAGE_NAME = "ubuntu/bionic64" #18.04
 
 servers = [
     {
@@ -34,20 +34,22 @@ servers = [
     }
 ]
 
-# This script to install k8s using kubeadm will get executed after a box is provisioned
-$configureBox = <<-SCRIPT
+# This script to install docker-registry
+$installDocker = <<-SCRIPT
 
-    # install docker v17.03
-    # reason for not using docker provision is that it always installs latest version of the docker, but kubeadm requires 17.03 or older
-    apt-get update
-    apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-    add-apt-repository "deb https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
-    apt-get update && apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 17.03 | head -1 | awk '{print $3}')
+    apt install apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
+    apt update
+    apt install docker-ce -y
 
     # run docker commands as vagrant user (sudo not required)
     usermod -aG docker vagrant
+SCRIPT
 
+# This script to install k8s using kubeadm will get executed after a box is provisioned
+$configureBox = <<-SCRIPT
     # install kubeadm
     apt-get install -y apt-transport-https curl
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -117,6 +119,32 @@ $configureNode = <<-SCRIPT
     sh ./kubeadm_join_cmd.sh
 SCRIPT
 
+# This script to install docker-registry
+$configureRegistry = <<-SCRIPT
+
+    # create user
+    mkdir -p auth
+    docker run --entrypoint htpasswd registry:2 -Bbn admin 111999888 > auth/htpasswd
+
+    # start registry
+    docker run -d \
+    -p 5000:5000 \
+    --restart=always \
+    --name registry \
+    -v "$(pwd)"/auth:/auth \
+    -e "REGISTRY_AUTH=htpasswd" \
+    -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+    -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+    registry:2
+
+    # HOW TO SSL https://docs.docker.com/registry/deploying/
+
+    # copy configuration
+    sudo cp -v /vagrant/docker_service /etc/default/docker
+
+    sudo service docker restart
+SCRIPT
+
 Vagrant.configure("2") do |config|
 
     servers.each do |opts|
@@ -138,6 +166,7 @@ Vagrant.configure("2") do |config|
             # we cannot use this because we can't install the docker version we want - https://github.com/hashicorp/vagrant/issues/4871
             #config.vm.provision "docker"
 
+            config.vm.provision "shell", inline: $installDocker
             config.vm.provision "shell", inline: $configureBox
 
             if opts[:type] == "master"
@@ -146,49 +175,26 @@ Vagrant.configure("2") do |config|
             else
                 config.vm.provision "shell", inline: $configureNode
             end
-
         end
-
     end
 
-    # config.vm.define "docker-registry" do |registry|
-    #     registry.vm.box = REGISTRY_IMAGE_NAME
+    config.vm.define "docker-registry" do |registry|
+        registry.vm.box = REGISTRY_IMAGE_NAME
         
-    #     registry.vm.hostname = "docker-registry"
+        registry.vm.hostname = "docker-registry"
 
-    #     registry.vm.network "forwarded_port", guest: 5000, host: 5000
-    #     registry.vm.network "forwarded_port", guest: 9090, host: 9090
-    #     registry.vm.network "forwarded_port", guest: 2375, host: 2375
-    #     registry.vm.network "private_network", ip: "84.84.87.88"
+        registry.vm.network "forwarded_port", guest: 5000, host: 5000
+        registry.vm.network "forwarded_port", guest: 2375, host: 2375
 
 
-        # registry.vm.provider "virtualbox" do |v|
+        registry.vm.provider "virtualbox" do |v|
+            v.name = "docker-registry"
+            v.customize ["modifyvm", :id, "--memory", "2048"]
+            v.customize ["modifyvm", :id, "--cpus", "2"]
+        end
 
-        #     v.name = opts[:name]
-        #     v.customize ["modifyvm", :id, "--memory", "2048"]
-        #     v.customize ["modifyvm", :id, "--cpus", "2"]
-
-        # end
-    #     # install docker, run registry container.
-    #     registry.vm.provision "docker" do |d|
-    #         # start registry
-    #         d.run "registry:2",
-    #         restart: "always",
-    #         daemonize: true,
-    #         auto_assign_name: false,
-    #         args: "-p '5000:5000' --name 'registry'"
-    #         # start registry UI
-    #         d.run "konradkleine/docker-registry-frontend:v2",
-    #         daemonize: true,
-    #         restart: "always",
-    #         auto_assign_name: false,
-    #         args: "-p 9090:80 --name 'registry-frontend' -e ENV_DOCKER_REGISTRY_HOST=84.84.87.88 -e ENV_DOCKER_REGISTRY_PORT=5000"
-    #     end
-
-    #     # write docker service configuration
-    #     config.vm.provision :shell,
-    #         inline: "sudo cp -v /vagrant/docker_service /etc/default/docker \
-    #         && sudo service docker restart"
-    # end
+        config.vm.provision "shell", inline: $installDocker
+        config.vm.provision "shell", inline: $configureRegistry
+    end
 
 end 
