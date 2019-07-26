@@ -7,11 +7,10 @@ took ispiration from: [link](https://kubernetes.io/blog/2019/03/15/kubernetes-se
 ```shell
 yarn ssh
 
-# once inside master
 kubectl proxy --address 0.0.0.0 --accept-hosts .*
-
-# then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
 ```
+
+then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
 
 ## how to get token
 
@@ -26,6 +25,51 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | gre
 
 ## how to login to registry
 
+Login
+
 ```shell
-docker login localhost:5000 --username admin --password 111999888
+docker login https://192.168.205.9:5000 --username admin --password 111999888
 ```
+
+## how to login to kubernetes for deploying
+
+```shell
+yarn ssh
+cat ~/.kube/config
+```
+
+exit the ssh
+
+copy the cluster, context and user from k8s-master to your local ~/.kube/config
+
+then switch the context by using:
+
+```shell
+kubectl config set-context kubernetes-admin@kubernetes
+```
+
+## how to regenerate certificates for registry
+
+```shell
+vagrant ssh docker-registry
+
+sudo sed -i 's/\[ v3_ca \]/\[ v3_ca \]\nsubjectAltName = IP: 192.168.205.9/g' /etc/ssl/openssl.cnf
+
+openssl req -config /etc/ssl/openssl.cnf -newkey rsa:4096 -nodes -sha256 -keyout domain.key -x509 -days 3650 -out domain.crt
+```
+
+Important: input the docker registry IP as FQDN
+
+Then copy back the certificates from docker-registry to this repository, and recreate all the VM's or manually copy them to all hosts
+
+If you want to try to login from your machine, remember to copy certificates.
+
+```shell
+sudo cp certs/domain.crt /etc/docker/certs.d/192.168.205.9:5000/ca.cert
+sudo cp certs/domain.key /etc/docker/certs.d/192.168.205.9:5000/ca.key
+```
+
+
+### TODO
+
+Add external valid persistent volumes

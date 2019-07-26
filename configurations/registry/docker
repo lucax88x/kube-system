@@ -4,4 +4,4 @@
 # Docker registry pass through.
 
 DOCKER_OPTS="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"
-DOCKER_OPTS="$DOCKER_OPTS --insecure-registry http://localhost:5000 --registry-mirror http://localhost:5000"
+DOCKER_OPTS="$DOCKER_OPTS --insecure-registry http://192.168.205.9:5000 --registry-mirror http://192.168.205.9:5000"

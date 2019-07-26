@@ -3,6 +3,7 @@
 
 K8S_IMAGE_NAME = "ubuntu/xenial64" #16.04
 REGISTRY_IMAGE_NAME = "ubuntu/bionic64" #18.04
+REGISTRY_IP = "192.168.205.9"
 
 servers = [
     {
@@ -71,6 +72,10 @@ EOF
     # set node-ip
     sudo sed -i "/^[^#]*KUBELET_EXTRA_ARGS=/c\KUBELET_EXTRA_ARGS=--node-ip=$IP_ADDR" /etc/default/kubelet
     sudo systemctl restart kubelet
+
+    # Copy registry certificates
+    sudo mkdir -p /etc/docker/certs.d/192.168.205.9:5000/
+    sudo cp -v /vagrant/certs/domain.crt /etc/docker/certs.d/192.168.205.9:5000/ca.crt
 SCRIPT
 
 $configureMaster = <<-SCRIPT
@@ -122,6 +127,11 @@ SCRIPT
 # This script to install docker-registry
 $configureRegistry = <<-SCRIPT
 
+    # copy configuration
+    mkdir -p certs
+    cp -v /vagrant/certs/domain.crt certs/domain.crt
+    cp -v /vagrant/certs/domain.key certs/domain.key
+
     # create user
     mkdir -p auth
     docker run --entrypoint htpasswd registry:2 -Bbn admin 111999888 > auth/htpasswd
@@ -132,15 +142,16 @@ $configureRegistry = <<-SCRIPT
     --restart=always \
     --name registry \
     -v "$(pwd)"/auth:/auth \
+    -v "$(pwd)"/certs:/certs \
     -e "REGISTRY_AUTH=htpasswd" \
     -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
     -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+    -e "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt" \
+    -e "REGISTRY_HTTP_TLS_KEY=/certs/domain.key" \
     registry:2
 
-    # HOW TO SSL https://docs.docker.com/registry/deploying/
-
     # copy configuration
-    sudo cp -v /vagrant/docker_service /etc/default/docker
+    sudo cp -v /vagrant/configurations/registry/docker /etc/default/docker
 
     sudo service docker restart
 SCRIPT
@@ -183,6 +194,7 @@ Vagrant.configure("2") do |config|
         
         registry.vm.hostname = "docker-registry"
 
+        registry.vm.network :private_network, ip: REGISTRY_IP
         registry.vm.network "forwarded_port", guest: 5000, host: 5000
         registry.vm.network "forwarded_port", guest: 2375, host: 2375
 
