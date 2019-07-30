@@ -24,6 +24,6 @@ docker run -d \
 registry:2
 
 # copy configuration
-sudo cp -v /vagrant/configurations/registry/docker /etc/default/docker
+cp -v /vagrant/configurations/registry/docker /etc/default/docker
 
-sudo service docker restart
+service docker restart

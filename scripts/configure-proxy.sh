@@ -28,13 +28,6 @@ defaults
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
 
-# frontend stats
-#     bind *:8404
-#     stats enable
-#     stats uri /stats
-#     stats refresh 10s
-#     stats admin if { src 127.0.0.1 }
-
 listen stats
     bind *:8404
     # stats auth admin:bdi2016
@@ -42,16 +35,6 @@ listen stats
     stats realm Haproxy\ Statistics
     stats enable
     mode http
-
-# listen stats
-#     bind *:8404
-#     # stats auth admin:bdi2016
-#     stats uri /stats
-#     stats realm Haproxy\ Statistics
-#     stats enable
-#     stats refresh 10s
-#     stats admin if { src 127.0.0.1 }
-#     mode http    
 
 frontend k8s-api
     bind 192.168.205.5:443
