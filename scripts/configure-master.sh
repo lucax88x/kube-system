@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "This is master"
+echo 'Configuring master'
 
 # ip of this box
 ## UBUNTU

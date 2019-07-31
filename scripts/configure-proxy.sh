@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo 'Configuring proxy'
+
 # Install haproxy
 apt-get -y install haproxy
 

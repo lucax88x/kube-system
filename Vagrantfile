@@ -51,14 +51,14 @@ servers = [
 Vagrant.configure("2") do |config|
 
     servers.each do |opts|
-        config.vm.define opts[:name] do |config|
+        config.vm.define opts[:name] do |box|
 
-            config.vm.box = opts[:box]
-            config.vm.box_version = opts[:box_version]
-            config.vm.hostname = opts[:name]
-            config.vm.network :private_network, ip: opts[:eth1]
+            box.vm.box = opts[:box]
+            box.vm.box_version = opts[:box_version]
+            box.vm.hostname = opts[:name]
+            box.vm.network :private_network, ip: opts[:eth1]
 
-            config.vm.provider "virtualbox" do |vb|
+            box.vm.provider "virtualbox" do |vb|
 
                 vb.name = opts[:name]
                 vb.customize ["modifyvm", :id, "--memory", opts[:mem]]
@@ -66,15 +66,15 @@ Vagrant.configure("2") do |config|
 
             end
 
-            config.vm.provision "shell", :path => "scripts/install-docker.sh"
-            config.vm.provision "shell", :path => "scripts/configure-box.sh"
+            box.vm.provision "shell", :path => "scripts/install-docker.sh"
+            box.vm.provision "shell", :path => "scripts/configure-box.sh"
 
             if opts[:type] == "master"
-                config.vm.network "forwarded_port", guest: 8001, host: 8001
-                config.vm.provision "shell", :path => "scripts/configure-master.sh"
+                box.vm.network "forwarded_port", guest: 8001, host: 8001
+                box.vm.provision "shell", :path => "scripts/configure-master.sh"
             else
                 # create Gluster disks
-                config.vm.provider :virtualbox do |vb|
+                box.vm.provider :virtualbox do |vb|
                     unless File.exist?("disk-#{opts[:index]}-0.vdi")
                         vb.customize ["storagectl", :id,"--name", "VboxSata", "--add", "sata"]
                     end
@@ -87,7 +87,7 @@ Vagrant.configure("2") do |config|
                     end
                 end
 
-                config.vm.provision "shell", :path => "scripts/configure-node.sh"
+                box.vm.provision "shell", :path => "scripts/configure-node.sh"
             end
         end
     end
@@ -124,4 +124,10 @@ Vagrant.configure("2") do |config|
     #   proxy.vm.network :private_network, ip: PROXY_IP
     #   proxy.vm.provision :shell, :path => "scripts/configure-proxy.sh"
     # end
+
+    config.trigger.after :up do |trigger|
+        trigger.only_on = 'docker-registry'
+        trigger.info = "Configuring GlusterFS After all machines have been created"
+        trigger.run_remote = {path: "configurations/gluster/gk-deploy.sh", args:  ["-g", "-y"]}
+    end
 end 

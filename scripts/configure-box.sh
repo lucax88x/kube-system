@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo 'Configuring single box (master / node)'
+
 # install kubeadm
 
 # CENTOS

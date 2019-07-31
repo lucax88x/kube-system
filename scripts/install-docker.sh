@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo 'Installing docker'
+
 # install docker
 
 # CENTOS

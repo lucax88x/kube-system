@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "This is worker"
+echo 'Configuring node'
 
 # CENTOS
 # https://github.com/kubernetes/kubeadm/issues/312

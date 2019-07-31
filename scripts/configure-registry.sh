@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo 'Configuring registry'
+
 # copy configuration
 mkdir -p certs
 cp -v /vagrant/certs/domain.crt certs/domain.crt
