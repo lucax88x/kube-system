@@ -5,9 +5,7 @@ took ispiration from: [link](https://kubernetes.io/blog/2019/03/15/kubernetes-se
 ## How to see dashboard
 
 ```shell
-yarn ssh
-
-kubectl proxy --address 0.0.0.0 --accept-hosts .*
+yarn k8s:start-dashboard
 ```
 
 then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
@@ -18,7 +16,7 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 [link](https://github.com/kubernetes/dashboard/wiki/Access-control#login-view)
 
 ```shell
-kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+yarn k8s:token
 ```
 
 ## how to login to registry
@@ -26,17 +24,14 @@ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | gre
 Login
 
 ```shell
-docker login https://192.168.205.9:5000 --username admin --password 111999888
+yarn registry:login
 ```
 
 ## how to login to kubernetes for deploying
 
 ```shell
-yarn ssh
-cat ~/.kube/config
+k8s:config
 ```
-
-exit the ssh
 
 copy the cluster, context and user from k8s-master to your local ~/.kube/config
 
@@ -66,8 +61,3 @@ If you want to try to login from your machine, remember to copy certificates.
 sudo cp certs/domain.crt /etc/docker/certs.d/192.168.205.9:5000/ca.cert
 sudo cp certs/domain.key /etc/docker/certs.d/192.168.205.9:5000/ca.key
 ```
-
-
-### TODO
-
-Add external valid persistent volumes

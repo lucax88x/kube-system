@@ -11,6 +11,10 @@
     "stop": "vagrant destroy -f",
     "down": "yarn stop",
     "ssh": "vagrant ssh k8s-master",
-    "ip": "bash ./scripts/vagrant.get-ips.sh"
+    "k8s:start-dashboard": "vagrant ssh k8s-master -c 'kubectl proxy --address 0.0.0.0 --accept-hosts .*'",
+    "k8s:token": "vagrant ssh k8s-master -c \"kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')\"",
+    "k8s:dashboard": "yarn k8s:start-dashboard & yarn k8s:token",
+    "k8s:config": "vagrant ssh k8s-master -c 'cat ~/.kube/config'",
+    "registry:login": "docker login https://192.168.205.9:5000 --username admin --password 111999888"
   }
 }

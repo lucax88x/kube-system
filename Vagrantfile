@@ -121,30 +121,13 @@ Vagrant.configure("2") do |config|
 
         registry.vm.provision "shell", :path => "scripts/install-docker.sh"
         registry.vm.provision "shell", :path => "scripts/configure-registry.sh"
+
+
+        registry.vm.post_up_message = <<-HEREDOC
+        ------------------------------------------------------
+        Once your cluster is up, remember to run the following command on k8s-master
+        cd /vagrant/configurations/gluster && bash gk-deploy.sh -gy /vagrant/configurations/gluster/topology.json
+        ------------------------------------------------------
+        HEREDOC
     end
-
-config.vm.post_up_message = <<-HEREDOC
-    ------------------------------------------------------
-    Once your cluster is up, remember to run the following command on k8s-master
-    cd /vagrant/configurations/gluster && bash gk-deploy.sh -gy /vagrant/configurations/gluster/topology.json
-    ------------------------------------------------------
-HEREDOC
-
-    # config.vm.define :haproxy, primary: true do |proxy|  
-    #   proxy.vm.box = PROXY_IMAGE_NAME
-  
-    #   proxy.vm.hostname = 'haproxy'
-    #   proxy.vm.network :forwarded_port, guest: 8080, host: 8080
-    #   proxy.vm.network :forwarded_port, guest: 80, host: 8081
-    #   proxy.vm.network :forwarded_port, guest: 443, host: 443
-  
-    #   proxy.vm.network :private_network, ip: PROXY_IP
-    #   proxy.vm.provision :shell, :path => "scripts/configure-proxy.sh"
-    # end
-
-    # config.trigger.after :up do |trigger|
-    #     trigger.only_on = 'k8s-master'
-    #     trigger.info = "Configuring GlusterFS After all machines have been created"
-    #     trigger.run_remote = {path: "configurations/gluster/gk-deploy.sh", args:  ["-gy", "/vagrant/configurations/gluster/topology.json"]}
-    # end
 end 
