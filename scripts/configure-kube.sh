@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo 'Configuring single box (master / node)'
+echo 'Configuring kube single box (master / node)'
 
 # install kubeadm
 
@@ -31,6 +31,8 @@ yum install -y kubelet kubeadm kubectl
 # apt-get update
 # apt-get install -y kubelet kubeadm kubectl
 # apt-mark hold kubelet kubeadm kubectl
+
+# TODO: INSTALL HEKETI & GLUSTERFS
 
 # kubelet requires swap off
 swapoff -a

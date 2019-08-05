@@ -5,56 +5,32 @@
         {
           "node": {
             "hostnames": {
-              "manage": [
-                "k8s-master"
-              ],
-              "storage": [
-                "192.168.205.10"
-              ]
+              "manage": ["k8s-node-1"],
+              "storage": ["192.168.205.11"]
             },
             "zone": 1
           },
-          "devices": [
-            "/dev/vdb",
-            "/dev/vdc",
-            "/dev/vdd"
-          ]
+          "devices": ["/dev/sdb"]
         },
         {
           "node": {
             "hostnames": {
-              "manage": [
-                "k8s-node-1"
-              ],
-              "storage": [
-                "192.168.205.11"
-              ]
+              "manage": ["k8s-node-2"],
+              "storage": ["192.168.205.12"]
             },
             "zone": 1
           },
-          "devices": [
-            "/dev/vdb",
-            "/dev/vdc",
-            "/dev/vdd"
-          ]
+          "devices": ["/dev/sdb"]
         },
         {
           "node": {
             "hostnames": {
-              "manage": [
-                "k8s-node-2"
-              ],
-              "storage": [
-                "192.168.205.12"
-              ]
+              "manage": ["k8s-node-3"],
+              "storage": ["192.168.205.13"]
             },
             "zone": 1
           },
-          "devices": [
-            "/dev/vdb",
-            "/dev/vdc",
-            "/dev/vdd"
-          ]
+          "devices": ["/dev/sdb"]
         }
       ]
     }

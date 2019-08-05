@@ -18,8 +18,6 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 [link](https://github.com/kubernetes/dashboard/wiki/Access-control#login-view)
 
 ```shell
-yarn ssh
-
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
 ```
 

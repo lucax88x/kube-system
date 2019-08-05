@@ -39,7 +39,7 @@ How this has been achieved:
 
 ### Limitations to be analyzed
 
-- (+) k8s master exploses our services not through normal ports (api should be 443, ftp should be 21 and other passive ports, etc) but through some internal ports (like 30000), we need to understand if it's feasible to map these ports to normal ports, in the server (iptables?) or DNS or if we need to provide a proxy
+- (+) k8s master exposes our services not through normal ports (api should be 443, ftp should be 21 and other passive ports, etc) but through some internal ports (like 30000), we need to understand if it's feasible to map these ports to normal ports, in the server (iptables?) or DNS or if we need to provide a proxy
 - (+) We have the VDI disks of GlusterFS to backup, how?
 - (-) Only one master node, we should have more and then have a LoadBalancer like HAProxy in front to avoid the single point of failure
 - (-) As we may have more environment, it's suggested to have ONE docker registry for all of the environments, so the following solutions is preferred

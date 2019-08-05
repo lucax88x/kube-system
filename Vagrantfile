@@ -13,7 +13,6 @@ REGISTRY_IP = "192.168.205.9"
 PROXY_IP = "192.168.205.5"
 PROXY_IMAGE_NAME = "ubuntu/precise32"
 
-GLUSTER_NODES = 3
 GLUSTER_DISKS = 3
 
 servers = [
@@ -45,6 +44,16 @@ servers = [
         :eth1 => "192.168.205.12",
         :mem => "2048",
         :cpu => "2"
+    },
+    {
+        :index => "2",
+        :name => "k8s-node-3",
+        :type => "node",
+        :box => K8S_NODE_IMAGE_NAME,
+        :box_url => K8S_NODE_IMAGE_URL,
+        :eth1 => "192.168.205.13",
+        :mem => "2048",
+        :cpu => "2"
     }
 ]
 
@@ -67,7 +76,8 @@ Vagrant.configure("2") do |config|
             end
 
             box.vm.provision "shell", :path => "scripts/install-docker.sh"
-            box.vm.provision "shell", :path => "scripts/configure-box.sh"
+            box.vm.provision "shell", :path => "scripts/configure-heketi.sh"
+            box.vm.provision "shell", :path => "scripts/configure-kube.sh"
 
             if opts[:type] == "master"
                 box.vm.network "forwarded_port", guest: 8001, host: 8001
@@ -109,9 +119,16 @@ Vagrant.configure("2") do |config|
             v.customize ["modifyvm", :id, "--cpus", "2"]
         end
 
-        config.vm.provision "shell", :path => "scripts/install-docker.sh"
-        config.vm.provision "shell", :path => "scripts/configure-registry.sh"
+        registry.vm.provision "shell", :path => "scripts/install-docker.sh"
+        registry.vm.provision "shell", :path => "scripts/configure-registry.sh"
     end
+
+config.vm.post_up_message = <<-HEREDOC
+    ------------------------------------------------------
+    Once your cluster is up, remember to run the following command on k8s-master
+    cd /vagrant/configurations/gluster && bash gk-deploy.sh -gy /vagrant/configurations/gluster/topology.json
+    ------------------------------------------------------
+HEREDOC
 
     # config.vm.define :haproxy, primary: true do |proxy|  
     #   proxy.vm.box = PROXY_IMAGE_NAME
@@ -125,9 +142,9 @@ Vagrant.configure("2") do |config|
     #   proxy.vm.provision :shell, :path => "scripts/configure-proxy.sh"
     # end
 
-    config.trigger.after :up do |trigger|
-        trigger.only_on = 'docker-registry'
-        trigger.info = "Configuring GlusterFS After all machines have been created"
-        trigger.run_remote = {path: "configurations/gluster/gk-deploy.sh", args:  ["-g", "-y"]}
-    end
+    # config.trigger.after :up do |trigger|
+    #     trigger.only_on = 'k8s-master'
+    #     trigger.info = "Configuring GlusterFS After all machines have been created"
+    #     trigger.run_remote = {path: "configurations/gluster/gk-deploy.sh", args:  ["-gy", "/vagrant/configurations/gluster/topology.json"]}
+    # end
 end 

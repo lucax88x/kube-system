@@ -55,6 +55,7 @@ backend k8s-api
     server apiserver1 192.168.205.10:6443 check
     server apiserver2 192.168.205.11:6443 check
     server apiserver3 192.168.205.12:6443 check
+    server apiserver3 192.168.205.13:6443 check
 EOD
     
 cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.orig
