@@ -1,0 +1,7 @@
+- document we have 1 repo for kube system
+- document how to install vagrant  (+ necessary dependencies)
+- comment vagrantfile
+- gluster min 3 nodes
+- what is heketi
+- document why not used ansible
+- move metalls 

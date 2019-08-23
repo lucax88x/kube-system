@@ -5,7 +5,7 @@ took ispiration from: [link](https://kubernetes.io/blog/2019/03/15/kubernetes-se
 ## How to see dashboard
 
 ```shell
-yarn k8s:start-dashboard
+yarn run k8s:start-dashboard
 ```
 
 then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
@@ -16,7 +16,7 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 [link](https://github.com/kubernetes/dashboard/wiki/Access-control#login-view)
 
 ```shell
-yarn k8s:token
+yarn run k8s:token
 ```
 
 ## how to login to registry
@@ -24,13 +24,13 @@ yarn k8s:token
 Login
 
 ```shell
-yarn registry:login
+yarn run registry:login
 ```
 
 ## how to login to kubernetes for deploying
 
 ```shell
-k8s:config
+yarn run k8s:config
 ```
 
 copy the cluster, context and user from k8s-master to your local ~/.kube/config
