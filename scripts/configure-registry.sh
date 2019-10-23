@@ -4,11 +4,14 @@ echo 'Configuring registry'
 
 # copy configuration
 mkdir -p certs
-cp -v /vagrant/certs/domain.crt certs/domain.crt
-cp -v /vagrant/certs/domain.key certs/domain.key
+
+# domains contains both certificates in one!
+cp -v /vagrant/configuration/certs/domains.crt certs/domains.crt
+cp -v /vagrant/configuration/certs/domains.key certs/domains.key
 
 # create user
 mkdir -p auth
+# TODO: strong password
 docker run --entrypoint htpasswd registry:2 -Bbn admin 111999888 > auth/htpasswd
 
 # start registry
@@ -21,11 +24,8 @@ docker run -d \
 -e "REGISTRY_AUTH=htpasswd" \
 -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
 -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
--e "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt" \
--e "REGISTRY_HTTP_TLS_KEY=/certs/domain.key" \
+-e "REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domains.crt" \
+-e "REGISTRY_HTTP_TLS_KEY=/certs/domains.key" \
 registry:2
-
-# copy configuration
-cp -v /vagrant/configurations/registry/docker /etc/default/docker
 
 service docker restart

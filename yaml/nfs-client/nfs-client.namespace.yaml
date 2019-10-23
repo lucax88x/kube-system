@@ -1,0 +1,10 @@
+{
+  "kind": "Namespace",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "nfs-client",
+    "labels": {
+      "name": "nfs-client"
+    }
+  }
+}

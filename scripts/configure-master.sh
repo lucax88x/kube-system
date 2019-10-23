@@ -2,44 +2,37 @@
 
 echo 'Configuring master'
 
-# ip of this box
-## UBUNTU
-#IP_ADDR=`ifconfig enp0s8 | grep Mask | awk '{print $2}'| cut -f2 -d:`
-# CENTOS
-IP_ADDR=`ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:`
+API_SERVER_CERT_EXTRA_SANS=${1:-''}
 
-# create temp folder
-mkdir -p /home/temp
+# ip of this box
+IP_ADDR=`ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:`
 
 # install k8s master
 HOST_NAME=$(hostname -s)
 
-# CENTOS
+# open ports for kubeadm
+firewall-cmd --permanent --add-port=6443/tcp
+firewall-cmd --permanent --add-port=2379-2380/tcp
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10251/tcp
+firewall-cmd --permanent --add-port=10252/tcp
+firewall-cmd --permanent --add-port=10255/tcp
+firewall-cmd --permanent --add-port=8472/udp
+firewall-cmd --add-masquerade --permanent
+# only if you want NodePorts exposed on control plane IP as well
+# firewall-cmd --permanent --add-port=30000-32767/tcp
+firewall-cmd --reload
+systemctl restart firewalld
+
 # https://github.com/kubernetes/kubeadm/issues/312
 echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
 
-kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$IP_ADDR  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16
+kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$API_SERVER_CERT_EXTRA_SANS  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16
 
 #copying credentials to regular user - vagrant
 sudo --user=vagrant mkdir -p /home/vagrant/.kube
 cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
 chown $(id -u vagrant):$(id -g vagrant) /home/vagrant/.kube/config
-
-# install Calico pod network addon
-export KUBECONFIG=/etc/kubernetes/admin.conf
-wget https://raw.githubusercontent.com/ecomm-integration-ballerina/kubernetes-cluster/master/calico/rbac-kdd.yaml
-kubectl apply -f rbac-kdd.yaml
-wget https://raw.githubusercontent.com/ecomm-integration-ballerina/kubernetes-cluster/master/calico/calico.yaml
-kubectl apply -f calico.yaml
-
-# install dashboard
-wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
-kubectl apply -f kubernetes-dashboard.yaml
-
-# enables dashboard
-# kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
-sudo cp -v /vagrant/dashboard-adminuser.yaml /home/temp
-kubectl apply -f /home/temp/dashboard-adminuser.yaml
 
 kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
 chmod +x /etc/kubeadm_join_cmd.sh
