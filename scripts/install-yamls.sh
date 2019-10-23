@@ -18,10 +18,6 @@ kubectl apply -f /vagrant/yaml/nfs-client/nfs-client.rbac.yaml
 kubectl apply -f /vagrant/yaml/nfs-client/nfs-client.deployment.yaml
 kubectl apply -f /vagrant/yaml/nfs-client/nfs-client.storage-class.yaml
 
-# create nginx-ingress
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
-kubectl apply -f /vagrant/yaml/ingress-nginx/ingress-nginx.service.yaml 
-
 # create cert-manager
 kubectl create namespace cert-manager
 kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml
@@ -35,4 +31,14 @@ kubectl apply -f /vagrant/yaml/registry/registry.deployment.yaml
 kubectl apply -f /vagrant/yaml/registry/registry.service.yaml 
 kubectl apply -f /vagrant/yaml/registry/registry.ingress.yaml 
 
+# create nginx-ingress
+curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml -o ingress-nginx.yaml
+sed \
+-e "s/namespace: ingress-nginx/namespace: registry/g" \
+-e "s/app.kubernetes.io\/part-of: ingress-nginx/app.kubernetes.io\/part-of: registry/g" \
+-e "s/- --configmap=\$(POD_NAMESPACE)\/nginx-configuration/- --ingress-class=registry-nginx\r\n            - --configmap=\$(POD_NAMESPACE)\/nginx-configuration/g" \
+ingress-nginx.yaml | kubectl apply -f -
+kubectl apply -f /vagrant/yaml/registry/ingress-nginx.service.yaml
 
+# clean
+rm ingress-nginx.yaml

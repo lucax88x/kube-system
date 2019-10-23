@@ -16,4 +16,4 @@
        solvers:
        - http01:
            ingress:
-             class:  nginx
+             class:  registry-nginx
