@@ -2,7 +2,8 @@
 
 echo 'Configuring master'
 
-API_SERVER_CERT_EXTRA_SANS=${1:-''}
+IS_SINGLE_NODE=${1:-'false'}
+API_SERVER_CERT_EXTRA_SANS=${2:-''}
 
 # ip of this box
 IP_ADDR=`ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:`
@@ -34,8 +35,18 @@ sudo --user=vagrant mkdir -p /home/vagrant/.kube
 cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
 chown $(id -u vagrant):$(id -g vagrant) /home/vagrant/.kube/config
 
-kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
-chmod +x /etc/kubeadm_join_cmd.sh
+if [ "$IS_SINGLE_NODE" = 'true' ] ; then
+    echo 'Configuring master as single-node (waiting 1 minute before proceeding)'
+
+    sleep 1m
+    #https://medium.com/@kstaykov/kubernetes-taint-what-is-it-and-how-to-work-with-it-962ffa22eb65
+    kubectl taint nodes --all node-role.kubernetes.io/master-
+else
+    echo 'Configuring master as multi-node'
+
+    kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
+    chmod +x /etc/kubeadm_join_cmd.sh
+fi
 
 # required for setting up password less ssh between guest VMs
 sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config

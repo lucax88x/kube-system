@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secrets-patcher
+  namespace: registry
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets"]
+  verbs: ["get", "list", "patch", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: default-secret-patcher
+  namespace: registry
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: registry
+roleRef:
+  kind: ClusterRole
+  name: secrets-patcher
+  apiGroup: rbac.authorization.k8s.io

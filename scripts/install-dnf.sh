@@ -3,4 +3,4 @@
 echo 'Installing DNF'
 
 yum install -y epel-release
-yum install -y DNF
+yum install -y dnf

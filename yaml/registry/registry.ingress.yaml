@@ -8,19 +8,19 @@ metadata:
     cert-manager.io/issuer: "letsencrypt-staging"
 
 spec:
-  # tls:
-  # - hosts:
-  #   - example.example.com
-  #   secretName: registry-tls
+  tls:
+  - hosts:
+    - registry.kairos.rocks
+    secretName: registry-tls
   rules:
-  # - host: example.example.com
-    - http:
+  - host: registry.kairos.rocks
+    http:
         paths:
         - path: /
           backend:
             serviceName: registry
             servicePort: 5000
-      # - path: /.well-known/acme-challenge/
-      #   backend:
-      #     serviceName: letsencrypt
-      #     servicePort: 80
+        - path: /.well-known/acme-challenge/
+          backend:
+            serviceName: letsencrypt
+            servicePort: 80
