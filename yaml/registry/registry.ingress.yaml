@@ -1,26 +1,25 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: registry
+  name: ingress
   namespace: registry
   annotations:
-    kubernetes.io/ingress.class: "registry-nginx"    
-    cert-manager.io/issuer: "letsencrypt-staging"
+    kubernetes.io/ingress.class: "nginx"    
 
 spec:
   tls:
-  - hosts:
-    - registry.kairos.rocks
-    secretName: registry-tls
+    - hosts:
+      - registry.kairos.rocks
+      secretName: registry-tls
   rules:
-  - host: registry.kairos.rocks
-    http:
-        paths:
-        - path: /
-          backend:
-            serviceName: registry
-            servicePort: 5000
-        - path: /.well-known/acme-challenge/
-          backend:
-            serviceName: letsencrypt
-            servicePort: 80
+    - host: registry.kairos.rocks
+      http:
+          paths:
+          - path: /
+            backend:
+              serviceName: registry
+              servicePort: 5000
+          - path: /.well-known/acme-challenge/
+            backend:
+              serviceName: letsencrypt
+              servicePort: 80
