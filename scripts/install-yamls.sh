@@ -35,6 +35,3 @@ kubectl apply -f /vagrant/yaml/registry/registry.ingress.yaml
 # create nginx-ingress
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
 kubectl apply -f /vagrant/yaml/ingress-nginx/ingress-nginx.service.yaml
-
-# clean
-rm ingress-nginx.yaml

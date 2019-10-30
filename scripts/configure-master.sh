@@ -26,7 +26,7 @@ firewall-cmd --reload
 systemctl restart firewalld
 
 # https://github.com/kubernetes/kubeadm/issues/312
-echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+echo '1' | tee -a /proc/sys/net/bridge/bridge-nf-call-iptables
 
 kubeadm init --apiserver-advertise-address=$IP_ADDR --apiserver-cert-extra-sans=$API_SERVER_CERT_EXTRA_SANS  --node-name $HOST_NAME --pod-network-cidr=172.16.0.0/16
 
