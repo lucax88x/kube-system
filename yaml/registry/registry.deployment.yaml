@@ -28,9 +28,10 @@ spec:
             items:
             - key: HTPASSWD
               path: htpasswd
-        - name: storage
-          emptyDir: {}
-            
+        - name: registry-images-pv
+          persistentVolumeClaim:
+            claimName: registry-images-pv-claim
+
       containers:
         - name: registry
           image: registry:2
@@ -44,5 +45,6 @@ spec:
             - name: htpasswd
               mountPath: /auth
               readOnly: true
-            - name: storage
+            - name: registry-images-pv
               mountPath: /var/lib/registry
+              subPath: registry-images

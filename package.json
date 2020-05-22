@@ -13,7 +13,6 @@
     "local:ssh": "vagrant ssh k8s-master",
     "local:k8s:read-config": "vagrant ssh k8s-master -c 'cat ~/.kube/config'",
     "k8s:start-dashboard": "kubectl proxy --address 0.0.0.0 --accept-hosts .*",
-    "k8s:token": "kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')",
-    "registry:login": "docker login https://registry.garaio-rem.ch:5000 --username admin --password 111999888"
+    "k8s:token": "kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')"
   }
 }

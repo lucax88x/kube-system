@@ -28,6 +28,7 @@ kubectl apply -f /vagrant/yaml/registry/letsencrypt.service.yaml
 
 kubectl apply -f /vagrant/yaml/registry/registry.config.yaml 
 kubectl apply -f /vagrant/yaml/registry/registry.secret.yaml 
+kubectl apply -f /vagrant/yaml/registry/registry.persistent-volume.yaml 
 kubectl apply -f /vagrant/yaml/registry/registry.deployment.yaml 
 kubectl apply -f /vagrant/yaml/registry/registry.service.yaml 
 kubectl apply -f /vagrant/yaml/registry/registry.ingress.yaml 
