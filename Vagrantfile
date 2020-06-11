@@ -59,19 +59,14 @@ Vagrant.configure("2") do |config|
 
                 vb.check_guest_additions = false
                 vb.functional_vboxsf     = false
-                
+
                 vb.name = opts[:name]
                 vb.customize ["modifyvm", :id, "--memory", opts[:mem]]
                 vb.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
 
             end
-            
-            box.vm.provision "shell", :path => "scripts/install-dnf.sh"
-            box.vm.provision "shell", :path => "scripts/install-docker.sh"
-            box.vm.provision "shell", :path => "scripts/configure-kube.sh"
 
             if opts[:type] == "master"
-            
                 box.vm.provider "virtualbox" do |vb|
                     unless File.exist?("nfs-disk-0.vdi")
                         vb.customize ["storagectl", :id,"--name", "VboxSata", "--add", "sata"]
@@ -82,17 +77,14 @@ Vagrant.configure("2") do |config|
 
                 box.vm.network "forwarded_port", guest: 6443, host: 6443
 
-                box.vm.provision "shell", :path => "scripts/create-nfs-server.sh"
-
                 box.vm.provision "shell" do |s|
-                    s.path = "scripts/configure-master.sh"
+                    s.path = "scripts/install-master.sh"
                     s.args   = [IS_SINGLE_NODE, K8S_API_SERVER_SANS]
                 end
 
-                box.vm.provision "install-yamls", type: "shell", :path => "scripts/install-yamls.sh"
             else
-                box.vm.provision "shell", :path => "scripts/configure-node.sh"
+                box.vm.provision "shell", :path => "scripts/install-node.sh"
             end
         end
     end
-end 
+end
