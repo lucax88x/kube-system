@@ -2,7 +2,17 @@
 
 took ispiration from: [link](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/)
 
-## How to see dashboard
+## PROD Environment
+
+Vagrant and stuffs like this are in order to simulate a K8s cluster locally, usually you would install master & nodes in separate servers by using the install scripts in the scripts folder
+
+## LOCAL Development
+
+### prerequisited
+
+you need to install vagrant CLI
+
+### how to see dashboard
 
 ```shell
 yarn run k8s:start-dashboard
@@ -10,7 +20,7 @@ yarn run k8s:start-dashboard
 
 then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
 
-## how to get token
+### how to get token
 
 [link](https://github.com/kubernetes/dashboard/wiki/Creating-sample-user)
 [link](https://github.com/kubernetes/dashboard/wiki/Access-control#login-view)
@@ -19,7 +29,7 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 yarn run k8s:token
 ```
 
-## how to login to registry
+### how to login to registry
 
 Login
 
@@ -27,7 +37,7 @@ Login
 yarn run registry:login
 ```
 
-## how to login to kubernetes for deploying
+### how to login to kubernetes for deploying
 
 ```shell
 yarn run k8s:config
@@ -41,7 +51,7 @@ then switch the context by using:
 kubectl config set-context kubernetes-admin@kubernetes
 ```
 
-## how to regenerate certificates for registry
+### how to regenerate certificates for registry
 
 ```shell
 vagrant ssh docker-registry
