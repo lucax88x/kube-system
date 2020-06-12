@@ -4,22 +4,23 @@ if [ "$IS_VAGRANT" = 'true' ] ; then
   cd /vagrant
 fi
 
-
-# install Calico pod network addon
 export KUBECONFIG=/etc/kubernetes/admin.conf
 
-kubectl apply -f ./yaml/kube-system/calico.yaml
-
-exit
-# install dashboard
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.1/aio/deploy/recommended.yaml
-kubectl apply -f ./yaml/kube-system/dashboard-adminuser.yaml
+# install Calico pod network addon
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 # creates metallb
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/namespace.yaml
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/metallb.yaml
+# https://github.com/kubernetes-sigs/kind/issues/1449
+kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+
 # remember to configure external IP
 kubectl apply -f ./yaml/metallb-system/metallb-system.config.yaml
+
+# install dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.1/aio/deploy/recommended.yaml
+kubectl apply -f ./yaml/kube-system/dashboard-adminuser.yaml
 
 # creates nfs-client
 kubectl apply -f ./yaml/nfs-client/nfs-client.namespace.yaml
