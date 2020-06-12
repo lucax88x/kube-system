@@ -10,9 +10,11 @@
     "local:up": "yarn local:start",
     "local:stop": "vagrant destroy -f",
     "local:down": "yarn local:stop",
+    "local:sync": "vagrant rsync",
+    "local:provision": "vagrant provision",
     "local:ssh": "vagrant ssh k8s-master",
-    "local:k8s:read-config": "vagrant ssh k8s-master -c 'cat ~/.kube/config'",
-    "k8s:start-dashboard": "kubectl proxy --address 0.0.0.0 --accept-hosts .*",
-    "k8s:token": "kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')"
+    "local:k8s:copy-config": "vagrant ssh k8s-master -c 'cat ~/.kube/config' > bare-metal-config",
+    "k8s:start-dashboard": "kubectl --kubeconfig ./bare-metal-config proxy --address 0.0.0.0 --accept-hosts .*",
+    "k8s:token": "kubectl --kubeconfig ./bare-metal-config -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')"
   }
 }

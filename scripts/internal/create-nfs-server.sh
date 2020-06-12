@@ -1,5 +1,7 @@
 # https://vitux.com/install-nfs-server-and-client-on-ubuntu/
 
+echo 'Install NFS'
+
 FOLDER=/srv/node/sdb
 
 # Install NFS Kernel Server
@@ -27,3 +29,5 @@ systemctl enable firewalld.service
 # # Open firewall for the client (s)
 firewall-cmd --permanent --zone=public --add-service=nfs
 firewall-cmd --reload
+
+echo 'Installed NFS'

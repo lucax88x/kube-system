@@ -2,11 +2,18 @@
 
 echo 'Install master'
 
-IS_SINGLE_NODE=${1:-'false'}
-API_SERVER_CERT_EXTRA_SANS=${2:-''}
+IS_VAGRANT=${1:-'false'}
+IS_SINGLE_NODE=${2:-'false'}
 
-internal/install-dnf.sh
-internal/install-docker.sh
-internal/configure-kube.sh
-internal/create-nfs-server.sh
-internal/install-yamls.sh $IS_SINGLE_NODE $API_SERVER_CERT_EXTRA_SANS
+if [ "$IS_VAGRANT" = 'true' ] ; then
+  cd /vagrant
+fi
+
+chmod +x ./scripts/internal/*
+
+# ./scripts/internal/install-dnf.sh
+# ./scripts/internal/install-docker.sh
+# ./scripts/internal/configure-kube.sh
+# ./scripts/internal/create-nfs-server.sh
+# ./scripts/internal/configure-master.sh $IS_VAGRANT $IS_SINGLE_NODE
+./scripts/internal/install-yamls.sh $IS_VAGRANT

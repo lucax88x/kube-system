@@ -36,3 +36,5 @@ systemctl enable kubelet.service
 
 # Install NFS drivers
 dnf -y install nfs-utils
+
+echo 'Configured kube single box (master / node)'

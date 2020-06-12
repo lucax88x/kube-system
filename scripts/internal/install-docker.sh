@@ -35,3 +35,5 @@ systemctl enable docker.service
 
 # run docker commands as vagrant user (sudo not required)
 usermod -aG docker vagrant
+
+echo 'Installed docker'

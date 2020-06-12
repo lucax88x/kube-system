@@ -5,8 +5,6 @@ K8S_MASTER_IMAGE_NAME = "generic/centos7"
 K8S_NODE_IMAGE_NAME = "generic/centos7"
 NFS_DISK_SIZE = 100 #gb
 
-K8S_API_SERVER_SANS = "192.168.205.10"
-
 IS_SINGLE_NODE = "true"
 
 servers = [
@@ -79,11 +77,14 @@ Vagrant.configure("2") do |config|
 
                 box.vm.provision "shell" do |s|
                     s.path = "scripts/install-master.sh"
-                    s.args   = [IS_SINGLE_NODE, K8S_API_SERVER_SANS]
+                    s.args   = ["true", IS_SINGLE_NODE]
                 end
 
             else
-                box.vm.provision "shell", :path => "scripts/install-node.sh"
+                box.vm.provision "shell" do |s|
+                    s.path = "scripts/install-node.sh"
+                    s.args   = ["true"]
+                end
             end
         end
     end
