@@ -12,7 +12,7 @@ systemctl start nfs-server.service
 
 # Create the Export Directory
 mkdir -p ${FOLDER}
-chown nobody:nobody ${FOLDER}
+chown nfsnobody:nfsnobody ${FOLDER}
 chmod 755 ${FOLDER}
 
 # Assign server access to client(s) through NFS export file
