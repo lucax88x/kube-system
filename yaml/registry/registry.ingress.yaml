@@ -4,18 +4,18 @@ metadata:
   name: ingress
   namespace: registry
   annotations:
-    kubernetes.io/ingress.class: "nginx"    
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: 0
 
 spec:
   tls:
     - hosts:
-      - registry.kairos.rocks
+        - registry.kairos.rocks
       secretName: registry-tls
   rules:
     - host: registry.kairos.rocks
       http:
-          paths:
+        paths:
           - path: /
             backend:
               serviceName: registry
@@ -24,3 +24,4 @@ spec:
             backend:
               serviceName: letsencrypt
               servicePort: 80
+
