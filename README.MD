@@ -35,14 +35,6 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 yarn run k8s:token
 ```
 
-### how to login to registry
-
-Login
-
-```shell
-yarn run registry:login
-```
-
 ### how to regenerate certificates for registry
 
 ```shell
