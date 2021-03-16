@@ -14,7 +14,7 @@ servers = [
         :box => K8S_MASTER_IMAGE_NAME,
         :eth1 => "192.168.205.10",
         :mem => "8192",
-        :cpu => "6"
+        :cpu => "4"
     },
     # {
     #     :index => "0",

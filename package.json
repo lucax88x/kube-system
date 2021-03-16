@@ -14,7 +14,9 @@
     "local:provision": "vagrant provision",
     "local:ssh": "vagrant ssh k8s-master",
     "local:k8s:copy-config": "vagrant ssh k8s-master -c 'cat ~/.kube/config' > bare-metal-config",
-    "k8s:start-dashboard": "kubectl --kubeconfig ./bare-metal-config proxy --address 0.0.0.0 --accept-hosts .*",
+    "registry:login": "docker login 192.168.205.10:5000 --username lucax88x",
+    "k8s:proxy": "kubectl --kubeconfig ./bare-metal-config proxy --address 0.0.0.0 --accept-hosts .*",
+    "k8s:dashboard": "google-chrome-stable http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login",
     "k8s:token": "kubectl --kubeconfig ./bare-metal-config -n kube-system describe secret $(kubectl --kubeconfig ./bare-metal-config -n kube-system get secret | grep admin-user | awk '{print $1}')"
   }
 }

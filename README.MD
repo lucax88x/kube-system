@@ -12,16 +12,22 @@ Vagrant and stuffs like this are in order to simulate a K8s cluster locally, usu
 
 you need to install vagrant CLI
 
+### create the servers
+
+```shell
+yarn up
+```
+
 ### copy k8s-config to local
 
 ```shell
-yarn run local:k8s:copy-config
+yarn local:k8s:copy-config
 ```
 
 ### how to see dashboard
 
 ```shell
-yarn run k8s:start-dashboard
+yarn k8s:start-dashboard
 ```
 
 then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
@@ -32,7 +38,7 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 [link](https://github.com/kubernetes/dashboard/wiki/Access-control#login-view)
 
 ```shell
-yarn run k8s:token
+yarn k8s:token
 ```
 
 ### how to regenerate certificates for registry
