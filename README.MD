@@ -12,6 +12,12 @@ Vagrant and stuffs like this are in order to simulate a K8s cluster locally, usu
 
 you need to install vagrant CLI
 
+### copy k8s-config to local
+
+```shell
+yarn run local:k8s:copy-config
+```
+
 ### how to see dashboard
 
 ```shell
@@ -35,20 +41,6 @@ Login
 
 ```shell
 yarn run registry:login
-```
-
-### how to login to kubernetes for deploying
-
-```shell
-yarn run k8s:config
-```
-
-copy the cluster, context and user from k8s-master to your local ~/.kube/config
-
-then switch the context by using:
-
-```shell
-kubectl config set-context kubernetes-admin@kubernetes
 ```
 
 ### how to regenerate certificates for registry

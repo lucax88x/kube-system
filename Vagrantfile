@@ -67,7 +67,7 @@ Vagrant.configure("2") do |config|
             if opts[:type] == "master"
                 box.vm.provider "virtualbox" do |vb|
                     unless File.exist?("nfs-disk-0.vdi")
-                        vb.customize ["storagectl", :id,"--name", "VboxSata", "--add", "sata"]
+                        vb.customize [ "storagectl", :id,"--name", "VboxSata", "--add", "sata" ]
                         vb.customize [ "createmedium", "--filename", "nfs-disk-0.vdi", "--size", 1024 * NFS_DISK_SIZE ]
                         vb.customize [ "storageattach", :id, "--storagectl", "VboxSata", "--port", 3, "--device", 0, "--type", "hdd", "--medium", "nfs-disk-0.vdi" ]
                     end
