@@ -40,7 +40,7 @@ fi
 if [ "$IS_SINGLE_NODE" = 'true' ] ; then
     echo 'Configuring master as single-node (waiting 1 minute before proceeding)'
 
-    sleep 1m
+    sleep 2m
     #https://medium.com/@kstaykov/kubernetes-taint-what-is-it-and-how-to-work-with-it-962ffa22eb65
     kubectl taint nodes --all node-role.kubernetes.io/master-
 else

@@ -27,7 +27,7 @@ spec:
             - name: PROVISIONER_NAME
               value: nfs-client-storage-provisioner
             - name: NFS_SERVER
-              value: 192.169.205.10
+              value: 192.168.205.10
             - name: NFS_PATH
               value: /srv/node/sdb
       volumes:
