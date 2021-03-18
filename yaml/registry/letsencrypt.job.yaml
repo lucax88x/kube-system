@@ -24,9 +24,9 @@ spec:
               containerPort: 80
             env:
             - name: DOMAINS
-              value: registry.kairos.rocks
+              value: local.k8s
             - name: EMAIL
-              value: luca.trazzi@garaio.com
+              value: lucax88x@gmail.com
             - name: SECRET
               value: registry-tls
             - name: STAGING

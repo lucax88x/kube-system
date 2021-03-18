@@ -10,19 +10,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - registry.kairos.rocks
+        - local.k8s
       secretName: registry-tls
   rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: registry
-                port: 
-                  number: 5000
-    - host: registry.kairos.rocks
+    - host: local.k8s
       http:
         paths:
           - path: /
