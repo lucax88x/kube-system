@@ -1,7 +1,7 @@
 
 #!/bin/bash
 
-echo 'Install master'
+echo 'Install node'
 
 IS_VAGRANT=${1:-'false'}
 

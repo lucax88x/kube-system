@@ -77,13 +77,13 @@ Vagrant.configure("2") do |config|
 
                 box.vm.provision "shell" do |s|
                     s.path = "scripts/install-master.sh"
-                    s.args   = ["true", IS_SINGLE_NODE]
+                    s.args   = ["true", IS_SINGLE_NODE, opts[:eth1]]
                 end
 
             else
                 box.vm.provision "shell" do |s|
                     s.path = "scripts/install-node.sh"
-                    s.args   = ["true"]
+                    s.args   = ["true", opts[:eth1]]
                 end
             end
         end
