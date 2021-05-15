@@ -24,7 +24,7 @@ spec:
               containerPort: 80
             env:
             - name: DOMAINS
-              value: local.k8s
+              value: registry.$PUBLIC_DOMAIN
             - name: EMAIL
               value: lucax88x@gmail.com
             - name: SECRET
@@ -32,3 +32,4 @@ spec:
             - name: STAGING
               value: 'true'
           restartPolicy: Never
+      backoffLimit: 1           

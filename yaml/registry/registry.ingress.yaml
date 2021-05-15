@@ -10,10 +10,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - local.k8s
+        - registry.$PUBLIC_DOMAIN
       secretName: registry-tls
   rules:
-    - host: local.k8s
+    - host: registry.$PUBLIC_DOMAIN
       http:
         paths:
           - path: /

@@ -42,23 +42,5 @@ then navigate to http://127.0.0.1:8001/api/v1/namespaces/kube-system/services/ht
 yarn k8s:token
 ```
 
-### how to regenerate certificates for registry
-
-```shell
-vagrant ssh docker-registry
-
-sudo sed -i 's/\[ v3_ca \]/\[ v3_ca \]\nsubjectAltName = IP: 192.168.205.9/g' /etc/ssl/openssl.cnf
-
-openssl req -config /etc/ssl/openssl.cnf -newkey rsa:4096 -nodes -sha256 -keyout domain.key -x509 -days 3650 -out domain.crt
-```
-
-Important: input the docker registry IP as FQDN
-
-Then copy back the certificates from docker-registry to this repository, and recreate all the VM's or manually copy them to all hosts
-
-If you want to try to login from your machine, remember to copy certificates.
-
-```shell
-sudo cp certs/domain.crt /etc/docker/certs.d/192.168.205.9:5000/ca.cert
-sudo cp certs/domain.key /etc/docker/certs.d/192.168.205.9:5000/ca.key
-```
+### how to add user to registry
+docker run --rm marcnuri/htpasswd -Bbn desiredUser desiredPassword | base64 -w 0 | xargs -I #0 kubectl patch secret registry -n registry --patch '{"data": { "HTPASSWD": "#0"}}'

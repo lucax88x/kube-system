@@ -5,11 +5,7 @@ echo 'Install master'
 IS_VAGRANT=${1:-'false'}
 IS_SINGLE_NODE=${2:-'false'}
 NODE_IP=${3}
-
-if [ "$NODE_IP" = "" ]; then
-  echo NODE_IP is empty
-  exit
-fi
+PUBLIC_DOMAIN=${4}
 
 if [ "$IS_VAGRANT" = 'true' ] ; then
   cd /vagrant
@@ -22,4 +18,4 @@ chmod +x ./scripts/internal/*
 ./scripts/internal/configure-kube.sh
 ./scripts/internal/create-nfs-server.sh
 ./scripts/internal/configure-master.sh $IS_VAGRANT $IS_SINGLE_NODE
-./scripts/internal/install-yamls.sh $IS_VAGRANT $NODE_IP
+./scripts/internal/install-yamls.sh $IS_VAGRANT $NODE_IP $PUBLIC_DOMAIN
