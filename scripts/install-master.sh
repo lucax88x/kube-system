@@ -14,7 +14,7 @@ fi
 chmod +x ./scripts/internal/*
 
 ./scripts/internal/install-dnf.sh
-./scripts/internal/install-docker.sh
+./scripts/internal/install-containerd.sh
 ./scripts/internal/configure-kube.sh
 ./scripts/internal/create-nfs-server.sh
 ./scripts/internal/configure-master.sh $IS_VAGRANT $IS_SINGLE_NODE

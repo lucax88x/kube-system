@@ -20,5 +20,5 @@ wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -ivh epel-release-latest-7.noarch.rpm
 dnf -y install sshpass
 
-sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.205.10:/etc/kubeadm_join_cmd.sh .
+sshpass -p "vagrant" scp -o StrictHostKeyChecking=no vagrant@192.168.56.10:/etc/kubeadm_join_cmd.sh .
 sh ./kubeadm_join_cmd.sh

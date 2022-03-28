@@ -12,6 +12,6 @@ fi
 chmod +x ./scripts/internal/*
 
 ./scripts/internal/install-dnf.sh
-./scripts/internal/install-docker.sh
+./scripts/internal/install-containerd.sh
 ./scripts/internal/configure-kube.sh
 ./scripts/internal/configure-node.sh

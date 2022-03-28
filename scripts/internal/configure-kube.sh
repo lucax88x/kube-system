@@ -6,6 +6,7 @@ echo 'Configuring kube single box (master / node)'
 
 dnf install -y wget
 dnf install -y net-tools
+dnf install -y iproute-tc
 
 cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -26,7 +27,7 @@ swapoff -a
 # keep swap off after reboot
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-IP_ADDR=`ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:`
+IP_ADDR=$(ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:)
 
 # set node-ip
 sudo sed -i "/^[^#]*KUBELET_EXTRA_ARGS=/c\KUBELET_EXTRA_ARGS=--node-ip=$IP_ADDR" /etc/sysconfig/kubelet

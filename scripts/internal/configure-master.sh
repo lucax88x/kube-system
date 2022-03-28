@@ -6,7 +6,7 @@ IS_VAGRANT=${1:-'false'}
 IS_SINGLE_NODE=${2:-'false'}
 
 # ip of this box
-IP_ADDR=`ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:`
+IP_ADDR=$(ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:)
 
 # install k8s master
 HOST_NAME=$(hostname -s)
@@ -28,19 +28,20 @@ systemctl restart firewalld
 # https://github.com/kubernetes/kubeadm/issues/312
 echo '1' | tee -a /proc/sys/net/bridge/bridge-nf-call-iptables
 
-kubeadm init --apiserver-advertise-address=$IP_ADDR --node-name $HOST_NAME --pod-network-cidr=192.168.0.0/16
+kubeadm init --apiserver-advertise-address="$IP_ADDR" --node-name "$HOST_NAME" --pod-network-cidr=192.168.0.0/16
 
 if [ "$IS_VAGRANT" = 'true' ] ; then
   #copying credentials to regular user - vagrant
   sudo --user=vagrant mkdir -p /home/vagrant/.kube
   cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-  chown $(id -u vagrant):$(id -g vagrant) /home/vagrant/.kube/config
+  chown "$(id -u vagrant):$(id -g vagrant)" /home/vagrant/.kube/config
 fi
 
 if [ "$IS_SINGLE_NODE" = 'true' ] ; then
-    echo 'Configuring master as single-node (waiting 1 minute before proceeding)'
+    MINUTES_TO_WAIT=2m
+    echo "Configuring master as single-node (waiting $MINUTES_TO_WAIT before proceeding)"
 
-    sleep 2m
+    sleep $MINUTES_TO_WAIT
     #https://medium.com/@kstaykov/kubernetes-taint-what-is-it-and-how-to-work-with-it-962ffa22eb65
     kubectl taint nodes --all node-role.kubernetes.io/master-
 else

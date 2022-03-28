@@ -11,7 +11,7 @@ Vagrant and stuffs like this are in order to simulate a K8s cluster locally, usu
 ### prerequisited
 
 you need to install vagrant CLI
-add 192.168.205.10 local.k8s to /etc/hosts
+add 192.168.56.10 local.k8s to /etc/hosts
 
 ### create the servers
 

@@ -1,11 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-K8S_MASTER_IMAGE_NAME = "generic/centos7"
-K8S_NODE_IMAGE_NAME = "generic/centos7"
+K8S_MASTER_IMAGE_NAME = "rockylinux/8"
+K8S_NODE_IMAGE_NAME = "rockylinux/8"
 NFS_DISK_SIZE = 100 #gb
 
-IS_SINGLE_NODE = "true"
 PUBLIC_DOMAIN = "local.k8s"
 
 servers = [
@@ -13,33 +12,34 @@ servers = [
         :name => "k8s-master",
         :type => "master",
         :box => K8S_MASTER_IMAGE_NAME,
-        :eth1 => "192.168.205.10",
-        :mem => "8192",
+        :eth1 => "192.168.56.10",
+        :mem => "4096",
         :cpu => "4"
     },
     # {
-    #     :index => "0",
     #     :name => "k8s-node-1",
     #     :type => "node",
     #     :box => K8S_NODE_IMAGE_NAME,
-    #     :eth1 => "192.168.205.11",
+    #     :eth1 => "192.168.56.11",
     #     :mem => "4096",
     #     :cpu => "4"
     # },
     # {
-    #     :index => "1",
     #     :name => "k8s-node-2",
     #     :type => "node",
     #     :box => K8S_NODE_IMAGE_NAME,
-    #     :eth1 => "192.168.205.12",
-    #     :mem => "3072",
-    #     :cpu => "2"
+    #     :eth1 => "192.168.56.12",
+    #     :mem => "4096",
+    #     :cpu => "4"
     # }
 ]
+
+IS_SINGLE_NODE = servers.length() == 1 ? "true" : "false"
 
 Vagrant.configure("2") do |config|
 
     config.vm.synced_folder '.', '/vagrant',
+ 
     type: 'rsync',
     rsync__exclude: [
       '.git', 'node_modules*',
