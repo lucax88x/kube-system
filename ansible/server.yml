@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Adds docker-ce repository
+      shell:
+        cmd: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        warn: false
+
+    - name: Adds k8s repository
+      shell:
+        cmd: |
+          cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+          EOF
+        warn: false
+
+    - name: Add base packages
+      dnf:
+        name:
+          - wget
+          - net-tools
+          - iproute-tc
+        state: present
+
+    - name: Add k8s packages
+      dnf:
+        name:
+          - containerd.io
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Set SELinux in permissive mode
+      shell:
+        cmd: |
+          setenforce 0
+          sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+    - name: Enable kubelet service
+      systemd:
+        name: kubelet
+        enabled: yes

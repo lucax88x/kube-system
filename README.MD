@@ -2,21 +2,18 @@
 
 took ispiration from: [link](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/)
 
-## PROD Environment
-
-Vagrant and stuffs like this are in order to simulate a K8s cluster locally, usually you would install master & nodes in separate servers by using the install scripts in the scripts folder
-
 ## LOCAL Development
 
-### prerequisited
+### requisites
 
 you need to install vagrant CLI
+you need to intsall ansible CLI
 add 192.168.56.10 local.k8s to /etc/hosts
 
 ### create the servers
 
 ```shell
-yarn up
+yarn start
 ```
 
 ### copy k8s-config to local

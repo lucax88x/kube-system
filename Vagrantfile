@@ -38,13 +38,13 @@ IS_SINGLE_NODE = servers.length() == 1 ? "true" : "false"
 
 Vagrant.configure("2") do |config|
 
-    config.vm.synced_folder '.', '/vagrant',
- 
-    type: 'rsync',
-    rsync__exclude: [
-      '.git', 'node_modules*',
-      '*.log', '*.vdi'
-    ]
+ #    config.vm.synced_folder '.', '/vagrant',
+ # 
+ #    type: 'rsync',
+ #    rsync__exclude: [
+ #      '.git', 'node_modules*',
+ #      '*.log', '*.vdi'
+ #    ]
 
     servers.each do |opts|
         config.vm.define opts[:name] do |box|
@@ -54,6 +54,11 @@ Vagrant.configure("2") do |config|
             box.vm.hostname = opts[:name]
             box.vm.network :private_network, ip: opts[:eth1]
 
+            # box.vm.provider "libvirt" do |libvirt|
+            #     libvirt.memory = opts[:mem]
+            #     libvirt.cpus = opts[:cpu]
+            # end
+
             box.vm.provider "virtualbox" do |vb|
 
                 vb.check_guest_additions = false
@@ -62,7 +67,6 @@ Vagrant.configure("2") do |config|
                 vb.name = opts[:name]
                 vb.customize ["modifyvm", :id, "--memory", opts[:mem]]
                 vb.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
-
             end
 
             if opts[:type] == "master"
@@ -73,19 +77,34 @@ Vagrant.configure("2") do |config|
                         vb.customize [ "storageattach", :id, "--storagectl", "VboxSata", "--port", 3, "--device", 0, "--type", "hdd", "--medium", "nfs-disk-0.vdi" ]
                     end
                 end
+                # box.vm.provider "libvirt" do |libvirt|
+                #     libvirt.storage :file, :size => '20G', :path => 'my_shared_disk.img', :allow_existing => true, :shareable => true, :type => 'raw'
+                # end
 
                 box.vm.network "forwarded_port", guest: 6443, host: 6443
 
-                box.vm.provision "shell" do |s|
-                    s.path = "scripts/install-master.sh"
-                    s.args   = ["true", IS_SINGLE_NODE, opts[:eth1], PUBLIC_DOMAIN]
+                box.vm.provision "ansible" do |ansible|
+                    ansible.verbose = "v"
+                    ansible.playbook = "ansible/master.yml"
+                    # ansible.extra_vars = {
+                    #     node_ip: "192.168.50.10",
+                    # }
+                    # ansibles.args   = ["true", IS_SINGLE_NODE, opts[:eth1], PUBLIC_DOMAIN]
                 end
 
             else
-                box.vm.provision "shell" do |s|
-                    s.path = "scripts/install-node.sh"
-                    s.args   = ["true", opts[:eth1]]
+                box.vm.provision "ansible" do |ansible|
+                    ansible.verbose = "v"
+                    ansible.playbook = "ansible/node.yml"
+                    # ansible.extra_vars = {
+                    #     node_ip: "192.168.50.10",
+                    # }
+                    # ansibles.args   = ["true", opts[:eth1], PUBLIC_DOMAIN]
                 end
+                # box.vm.provision "shell" do |s|
+                #     s.path = "scripts/install-node.sh"
+                #     s.args   = ["true", opts[:eth1]]
+                # end
             end
         end
     end
