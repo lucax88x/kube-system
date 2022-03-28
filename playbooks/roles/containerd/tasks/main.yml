@@ -1,0 +1,45 @@
+---
+- name: Adds docker-ce repository
+  shell:
+    cmd: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    warn: false
+
+- name: Add containerd package
+  ansible.builtin.dnf:
+    name:
+      - containerd.io
+    state: present
+
+- name: Configure containerd
+  shell:
+    cmd: |
+      cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+      overlay
+      br_netfilter
+      EOF
+
+      sudo modprobe overlay
+      sudo modprobe br_netfilter
+
+      # Setup required sysctl params, these persist across reboots.
+      cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.ipv4.ip_forward                 = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      EOF
+
+- name: Apply sysctl params without reboot
+  shell:
+    cmd: sysctl --system
+
+- name: Create containerd configuratoin
+  shell:
+    cmd: |
+      sudo mkdir -p /etc/containerd
+      containerd config default | sudo tee /etc/containerd/config.toml
+
+- name: Restart containerd service
+  systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: yes

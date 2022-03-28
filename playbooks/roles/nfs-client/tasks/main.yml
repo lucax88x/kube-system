@@ -1,0 +1,6 @@
+- name: Add nfs client packages
+  dnf:
+    name:
+      - nfs-utils
+    state: present
+

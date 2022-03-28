@@ -85,7 +85,7 @@ Vagrant.configure("2") do |config|
 
                 box.vm.provision "ansible" do |ansible|
                     ansible.verbose = "v"
-                    ansible.playbook = "ansible/master.yml"
+                    ansible.playbook = "playbooks/master.yml"
                     # ansible.extra_vars = {
                     #     node_ip: "192.168.50.10",
                     # }
@@ -95,7 +95,7 @@ Vagrant.configure("2") do |config|
             else
                 box.vm.provision "ansible" do |ansible|
                     ansible.verbose = "v"
-                    ansible.playbook = "ansible/node.yml"
+                    ansible.playbook = "playbooks/node.yml"
                     # ansible.extra_vars = {
                     #     node_ip: "192.168.50.10",
                     # }

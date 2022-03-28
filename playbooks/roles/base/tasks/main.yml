@@ -1,0 +1,8 @@
+---
+- name: Add base packages
+  ansible.builtin.dnf:
+    name:
+      - wget
+      - net-tools
+      - iproute-tc
+    state: present

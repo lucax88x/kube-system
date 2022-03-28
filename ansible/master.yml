@@ -1,4 +1,0 @@
-- hosts: all
-  become: true
-
-- import_playbook: server.yml
