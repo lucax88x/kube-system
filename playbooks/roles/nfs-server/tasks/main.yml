@@ -1,9 +1,9 @@
+---
 - name: Add nfs server packages
-  dnf:
+  ansible.builtin.dnf:
     name:
       - nfs-utils
     state: present
- 
 # #!/bin/bash
 #
 # echo 'Install NFS'

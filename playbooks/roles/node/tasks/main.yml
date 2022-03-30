@@ -1,0 +1,35 @@
+---
+- name: Enable kubernetes specific ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - 10250/tcp
+    - 10255/tcp
+    - 8472/udp
+    - 30000-32767/tcp
+
+- name: Enable masquerade
+  ansible.posix.firewalld:
+    masquerade: true
+    state: enabled
+    permanent: true
+
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true
+
+- name: Reload firewalld service
+  ansible.builtin.systemd:
+    name: firewalld
+    state: reloaded
+
+- name: Copy cluster join token from master
+  ansible.builtin.copy:
+    src: /tmp/kubeadm-join.command
+    dest: /etc/kubernetes
+
+- name: Joining the cluster
+  ansible.builtin.command: sh /etc/kubernetes/kubeadm-join.command
+  changed_when: false

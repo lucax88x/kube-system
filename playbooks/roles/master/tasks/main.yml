@@ -1,22 +1,86 @@
 ---
 - name: Enable kubernetes specific ports
   ansible.posix.firewalld:
-    port:
-      - 8081/tcp
-      - 6443/tcp
-      - 2379-2380/tcp
-      - 10250/tcp
-      - 10251/tcp
-      - 10252/tcp
-      - 10255/tcp
-      - 8472/udp
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - 8081/tcp
+    - 6443/tcp
+    - 2379-2380/tcp
+    - 10250/tcp
+    - 10251/tcp
+    - 10252/tcp
+    - 10255/tcp
+    - 8472/udp
     # if you want to expose nodeport
     # 30000-32767/tcp
-    permanent: yes
-    state: enable
 
 - name: Enable masquerade
   ansible.posix.firewalld:
-    masquerade: yes
+    masquerade: true
     state: enabled
-    permanent: yes
+    permanent: true
+
+- name: Reload firewalld
+  ansible.builtin.command: firewall-cmd --reload
+  changed_when: true
+
+- name: Reload firewalld service
+  ansible.builtin.systemd:
+    name: firewalld
+    state: reloaded
+
+# https://github.com/kubernetes/kubeadm/issues/312
+# echo '1' | tee -a /proc/sys/net/bridge/bridge-nf-call-iptables
+
+- name: Check admin.conf file exists.
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: k8s_admin_conf
+
+- name: Initialize the cluster if not initialized
+  ansible.builtin.shell: |
+    kubeadm init \
+    --apiserver-advertise-address="{{ ansible_all_ipv4_addresses | last }}" \
+    --pod-network-cidr=192.168.0.0/16
+  register: result
+  changed_when: result.stdout.find("Your Kubernetes master has initialized successfully!") != -1
+  when: not k8s_admin_conf.stat.exists
+
+- name: Check kube.conf file exists.
+  ansible.builtin.stat:
+    path: "/home/{{ ansible_ssh_user }}/.kube/config"
+  register: k8s_conf
+
+- name: Create .kube directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_ssh_user }}/.kube"
+    state: directory
+    mode: 0755
+
+- name: Copy admin.conf to kube.conf
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ ansible_ssh_user }}/.kube/config"
+    remote_src: true
+    mode: 0444
+  when: k8s_admin_conf.stat.exists and not k8s_conf.stat.exists
+
+- name: Create cluster join token
+  ansible.builtin.command: kubeadm token create --print-join-command
+  register: join_command
+  changed_when: false
+
+- name: Store join command
+  ansible.builtin.copy:
+    content: "{{ join_command.stdout }}"
+    dest: /etc/kubernetes/kubeadm-join.command
+    mode: 0777
+
+- name: Copy join command to local
+  ansible.builtin.fetch:
+    src: /etc/kubernetes/kubeadm-join.command
+    dest: /tmp/kubeadm-join.command
+    flat: true
+    mode: 0777

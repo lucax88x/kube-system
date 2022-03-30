@@ -1,0 +1,11 @@
+---
+- name: Download calico
+  ansible.builtin.get_url:
+    url: https://docs.projectcalico.org/manifests/calico.yaml
+    dest: /calico.yaml
+    mode: "0664"
+
+- name: Apply calico
+  kubernetes.core.k8s:
+    state: present
+    src: /calico.yaml

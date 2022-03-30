@@ -1,6 +1,6 @@
+---
 - name: Add nfs client packages
-  dnf:
+  ansible.builtin.dnf:
     name:
       - nfs-utils
     state: present
-

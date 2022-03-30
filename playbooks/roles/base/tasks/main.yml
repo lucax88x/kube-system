@@ -5,4 +5,12 @@
       - wget
       - net-tools
       - iproute-tc
+      - firewalld
     state: present
+
+- name: Start firewalld service
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+    masked: false

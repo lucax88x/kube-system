@@ -16,14 +16,14 @@ servers = [
         :mem => "4096",
         :cpu => "4"
     },
-    # {
-    #     :name => "k8s-node-1",
-    #     :type => "node",
-    #     :box => K8S_NODE_IMAGE_NAME,
-    #     :eth1 => "192.168.56.11",
-    #     :mem => "4096",
-    #     :cpu => "4"
-    # },
+    {
+        :name => "k8s-node-1",
+        :type => "node",
+        :box => K8S_NODE_IMAGE_NAME,
+        :eth1 => "192.168.56.11",
+        :mem => "4096",
+        :cpu => "4"
+    },
     # {
     #     :name => "k8s-node-2",
     #     :type => "node",
@@ -82,30 +82,13 @@ Vagrant.configure("2") do |config|
                 # end
 
                 box.vm.network "forwarded_port", guest: 6443, host: 6443
-
-                box.vm.provision "ansible" do |ansible|
-                    ansible.verbose = "v"
-                    ansible.playbook = "playbooks/master.yml"
-                    # ansible.extra_vars = {
-                    #     node_ip: "192.168.50.10",
-                    # }
-                    # ansibles.args   = ["true", IS_SINGLE_NODE, opts[:eth1], PUBLIC_DOMAIN]
-                end
-
             else
-                box.vm.provision "ansible" do |ansible|
-                    ansible.verbose = "v"
-                    ansible.playbook = "playbooks/node.yml"
-                    # ansible.extra_vars = {
-                    #     node_ip: "192.168.50.10",
-                    # }
-                    # ansibles.args   = ["true", opts[:eth1], PUBLIC_DOMAIN]
-                end
-                # box.vm.provision "shell" do |s|
-                #     s.path = "scripts/install-node.sh"
-                #     s.args   = ["true", opts[:eth1]]
-                # end
             end
         end
+    end
+ 
+    config.vm.provision "ansible" do |ansible|
+      # ansible.verbose = "v"
+      ansible.playbook = "playbooks/main.yml"
     end
 end

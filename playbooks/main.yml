@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - base
+    - k8s-structure
+    - containerd
+
+- hosts: k8s-master
+  become: true
+  roles:
+    - master
+
+- hosts: k8s-node-*
+  become: true
+  roles:
+    - node
+
+- hosts: k8s-master
+  become: true
+  roles:
+    - k8s
