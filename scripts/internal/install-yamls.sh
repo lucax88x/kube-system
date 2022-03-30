@@ -1,33 +1,33 @@
-IS_VAGRANT=${1:-'false'}
-export NODE_IP=${2}
-export PUBLIC_DOMAIN=${3}
+# IS_VAGRANT=${1:-'false'}
+# export NODE_IP=${2}
+# export PUBLIC_DOMAIN=${3}
+#
+# if [ "$IS_VAGRANT" = 'true' ] ; then
+#   cd /vagrant
+# fi
+#
+# if [ "$NODE_IP" = "" ]; then
+#   echo NODE_IP is empty
+#   exit
+# fi
+#
+# if [ "$PUBLIC_DOMAIN" = "" ]; then
+#   echo PUBLIC_DOMAIN is empty
+#   exit
+# fi
+#
+# ## if you run from your pc, you can comment this one
+# export KUBECONFIG=/etc/kubernetes/admin.conf
+#
+# echo install Calico pod network addon
+# kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
-if [ "$IS_VAGRANT" = 'true' ] ; then
-  cd /vagrant
-fi
-
-if [ "$NODE_IP" = "" ]; then
-  echo NODE_IP is empty
-  exit
-fi
-
-if [ "$PUBLIC_DOMAIN" = "" ]; then
-  echo PUBLIC_DOMAIN is empty
-  exit
-fi
-
-## if you run from your pc, you can comment this one
-export KUBECONFIG=/etc/kubernetes/admin.conf
-
-echo install Calico pod network addon
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-
-echo creates metallb
-kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.5/manifests/namespace.yaml
-kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.5/manifests/metallb.yaml
-# https://github.com/kubernetes-sigs/kind/issues/1449
+# echo creates metallb
+# kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.5/manifests/namespace.yaml
+# kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.5/manifests/metallb.yaml
+# # https://github.com/kubernetes-sigs/kind/issues/1449
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
-envsubst '$NODE_IP' < ./yaml/metallb-system/metallb-system.config.yaml | kubectl apply -f - 
+# envsubst '$NODE_IP' < ./yaml/metallb-system/metallb-system.config.yaml | kubectl apply -f - 
 
 echo install dashboard
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml

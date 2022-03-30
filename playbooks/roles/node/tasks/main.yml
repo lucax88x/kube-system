@@ -29,6 +29,7 @@
   ansible.builtin.copy:
     src: /tmp/kubeadm-join.command
     dest: /etc/kubernetes
+    mode: 0664
 
 - name: Joining the cluster
   ansible.builtin.command: sh /etc/kubernetes/kubeadm-join.command

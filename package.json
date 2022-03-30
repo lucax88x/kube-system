@@ -13,6 +13,7 @@
     "sync": "vagrant rsync",
     "provision": "vagrant provision",
     "ssh": "vagrant ssh",
+    "ansible:install": "ansible-galaxy install -r requirements.yml",
     "vagrant:k8s:copy-config": "vagrant ssh k8s-master -c 'cat ~/.kube/config' > bare-metal-config",
     "vagrant:registry:login": "docker login 192.168.56.10:5000 --username lucax88x",
     "vagrant:k8s:proxy": "kubectl --kubeconfig ./bare-metal-config proxy --address 0.0.0.0 --accept-hosts .*",

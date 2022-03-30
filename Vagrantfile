@@ -9,6 +9,14 @@ PUBLIC_DOMAIN = "local.k8s"
 
 servers = [
     {
+        :name => "ceph-master",
+        :type => "master",
+        :box => K8S_MASTER_IMAGE_NAME,
+        :eth1 => "192.168.56.10",
+        :mem => "4096",
+        :cpu => "4"
+    },
+    {
         :name => "k8s-master",
         :type => "master",
         :box => K8S_MASTER_IMAGE_NAME,
@@ -54,29 +62,29 @@ Vagrant.configure("2") do |config|
             box.vm.hostname = opts[:name]
             box.vm.network :private_network, ip: opts[:eth1]
 
-            # box.vm.provider "libvirt" do |libvirt|
-            #     libvirt.memory = opts[:mem]
-            #     libvirt.cpus = opts[:cpu]
-            # end
-
-            box.vm.provider "virtualbox" do |vb|
-
-                vb.check_guest_additions = false
-                vb.functional_vboxsf     = false
-
-                vb.name = opts[:name]
-                vb.customize ["modifyvm", :id, "--memory", opts[:mem]]
-                vb.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
+            box.vm.provider "libvirt" do |libvirt|
+                libvirt.memory = opts[:mem]
+                libvirt.cpus = opts[:cpu]
             end
 
+            # box.vm.provider "virtualbox" do |vb|
+            #
+            #     vb.check_guest_additions = false
+            #     vb.functional_vboxsf     = false
+            #
+            #     vb.name = opts[:name]
+            #     vb.customize ["modifyvm", :id, "--memory", opts[:mem]]
+            #     vb.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
+            # end
+
             if opts[:type] == "master"
-                box.vm.provider "virtualbox" do |vb|
-                    unless File.exist?("nfs-disk-0.vdi")
-                        vb.customize [ "storagectl", :id,"--name", "VboxSata", "--add", "sata" ]
-                        vb.customize [ "createmedium", "--filename", "nfs-disk-0.vdi", "--size", 1024 * NFS_DISK_SIZE ]
-                        vb.customize [ "storageattach", :id, "--storagectl", "VboxSata", "--port", 3, "--device", 0, "--type", "hdd", "--medium", "nfs-disk-0.vdi" ]
-                    end
-                end
+                # box.vm.provider "virtualbox" do |vb|
+                #     unless File.exist?("nfs-disk-0.vdi")
+                #         vb.customize [ "storagectl", :id,"--name", "VboxSata", "--add", "sata" ]
+                #         vb.customize [ "createmedium", "--filename", "nfs-disk-0.vdi", "--size", 1024 * NFS_DISK_SIZE ]
+                #         vb.customize [ "storageattach", :id, "--storagectl", "VboxSata", "--port", 3, "--device", 0, "--type", "hdd", "--medium", "nfs-disk-0.vdi" ]
+                #     end
+                # end
                 # box.vm.provider "libvirt" do |libvirt|
                 #     libvirt.storage :file, :size => '20G', :path => 'my_shared_disk.img', :allow_existing => true, :shareable => true, :type => 'raw'
                 # end

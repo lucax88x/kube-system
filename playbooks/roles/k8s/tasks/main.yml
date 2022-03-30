@@ -1,2 +1,3 @@
 ---
 - include_tasks: calico.yml
+- include_tasks: metallb.yml
