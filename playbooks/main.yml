@@ -1,17 +1,27 @@
 ---
-- hosts: all
+- hosts: nfs-storage
+  become: true
+  roles:
+    - base
+    - nfs-server
+    - storage
+
+- hosts:
+    - k8s-master
+    - k8s-node-1
   become: true
   roles:
     - base
     - k8s-structure
     - containerd
+    - nfs-client
 
 - hosts: k8s-master
   become: true
   roles:
     - master
 
-- hosts: k8s-node-*
+- hosts: k8s-node-1
   become: true
   roles:
     - node

@@ -1,0 +1,2 @@
+---
+server_ip_address: "{{ ansible_all_ipv4_addresses | last }}"

@@ -4,36 +4,34 @@
     name:
       - nfs-utils
     state: present
-# #!/bin/bash
-#
-# echo 'Install NFS'
-#
-# FOLDER=/srv/node/sdb
-#
-# # Install NFS Kernel Server
-# dnf -y install nfs-utils
-#
-# systemctl enable nfs-server.service
-# systemctl start nfs-server.service
-#
-# # Create the Export Directory
-# mkdir -p ${FOLDER}
-# chown nobody:nobody ${FOLDER}
-# chmod 755 ${FOLDER}
-#
-# # Assign server access to client(s) through NFS export file
-# echo '/srv/node/sdb 192.168.56.0/24(rw,sync,no_subtree_check)' | tee -a /etc/exports
-#
-# # Export the shared directory
-# exportfs -a
-#
-# systemctl restart nfs-server.service
-#
-# systemctl start firewalld.service
-# systemctl enable firewalld.service
-#
-# # # Open firewall for the client (s)
-# firewall-cmd --permanent --zone=public --add-service=nfs
-# firewall-cmd --reload
-#
-# echo 'Installed NFS'
+
+- name: Enable nfs-server service
+  ansible.builtin.systemd:
+    name: nfs-server
+    enabled: true
+
+- name: Creates store directory
+  ansible.builtin.file:
+    path: "{{ nfs_folder }}"
+    state: directory
+    recurse: true
+    owner: nobody
+    group: nobody
+    mode: 0775
+
+- name: Create exports settings
+  ansible.builtin.template:
+    src: templates/exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Re-export the share
+  ansible.builtin.command: exportfs -rav
+  changed_when: true
+
+- name: Enable nfs-server service
+  ansible.builtin.systemd:
+    name: nfs-server
+    state: restarted

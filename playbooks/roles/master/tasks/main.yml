@@ -39,10 +39,12 @@
     path: /etc/kubernetes/admin.conf
   register: k8s_admin_conf
 
+# TODO: use server range
+# TODO use config file instead of parameters
 - name: Initialize the cluster if not initialized
   ansible.builtin.shell: |
     kubeadm init \
-    --apiserver-advertise-address="{{ ansible_all_ipv4_addresses | last }}" \
+    --apiserver-advertise-address="{{ server_ip_address }}" \
     --pod-network-cidr=192.168.0.0/16
   register: result
   changed_when: result.stdout.find("Your Kubernetes master has initialized successfully!") != -1

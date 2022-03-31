@@ -1,0 +1,5 @@
+---
+# ansible_python_interpreter: '/usr/bin/python'
+server_ip: "{{ 'ansible_' + server_network_adapter }}"
+server_ip_address: "{{ vars[server_ip].ipv4.address }}"
+server_ip_range: "{{ server_ip_address | ansible.netcommon.ipsubnet(24, 0) }}"

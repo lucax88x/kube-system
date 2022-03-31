@@ -13,6 +13,7 @@
       - containerd.io
     state: present
 
+# TODO use template
 - name: Configure containerd
   ansible.builtin.shell:
     cmd: |

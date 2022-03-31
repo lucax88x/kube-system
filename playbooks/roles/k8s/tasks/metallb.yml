@@ -15,17 +15,13 @@
     state: present
     src: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
 
-- name: Copy metallb config
-  ansible.builtin.copy:
-    src: yaml/metallb-system/metallb-system.config.yaml
-    dest: .
-    mode: 0664
-
-- name: Update metallb config
-  ansible.builtin.replace:
-    path: metallb-system.config.yaml
-    regexp: "$NODE_IP"
-    replace: "{{ ansible_all_ipv4_addresses | last }}"
+- name: Create metallb config
+  ansible.builtin.template:
+    src: metallb-system-config.j2
+    dest: metallb-system-config.yaml
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Apply metallb config
   kubernetes.core.k8s:

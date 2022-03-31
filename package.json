@@ -6,7 +6,7 @@
   "author": "lucatrazzi <luca.trazzi@garaio.com>",
   "license": "MIT",
   "scripts": {
-    "start": "vagrant up",
+    "start": "vagrant up --provider libvirt --no-destroy-on-error",
     "down": "vagrant destroy -f",
     "stop": "yarn stop",
     "up": "yarn start",

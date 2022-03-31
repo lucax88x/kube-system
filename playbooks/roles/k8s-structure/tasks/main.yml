@@ -15,6 +15,7 @@
     warn: false
   changed_when: false
 
+  # TODO: block version to prevent updates
 - name: Add k8s packages
   ansible.builtin.dnf:
     name:
@@ -30,11 +31,6 @@
       sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
   changed_when: false
 
-- name: Enable kubelet service
-  ansible.builtin.systemd:
-    name: kubelet
-    enabled: true
-
 - name: Disable SWAP
   ansible.builtin.shell: |
     # disable on instance
@@ -42,6 +38,12 @@
     # disable permanently
     sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
   changed_when: false
+
+- name: Enable kubelet service
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+
 # # set node-ip
 # IP_ADDR=$(ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:)
 # sudo sed -i "/^[^#]*KUBELET_EXTRA_ARGS=/c\KUBELET_EXTRA_ARGS=--node-ip=$IP_ADDR" /etc/sysconfig/kubelet
