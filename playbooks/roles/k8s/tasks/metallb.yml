@@ -1,29 +1,36 @@
 ---
-# - name: Download calico
-#   ansible.builtin.get_url:
-#     url: https://docs.projectcalico.org/manifests/calico.yaml
-#     dest: /calico.yaml
-#     mode: "0664"
+- name: Download metallb namespace
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/metallb/metallb/v{{ versions.metallb }}/manifests/namespace.yaml
+    dest: /tmp/metallb.namespace.yaml
+    mode: 0664
 
 - name: Apply metallb namespace
   kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
     state: present
-    src: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
-
-- name: Apply metallb
-  kubernetes.core.k8s:
-    state: present
-    src: https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+    src: /tmp/metallb.namespace.yaml
 
 - name: Create metallb config
   ansible.builtin.template:
-    src: metallb-system-config.j2
-    dest: metallb-system-config.yaml
-    owner: root
-    group: root
+    src: metallb.config.j2
+    dest: /tmp/metallb.config.yaml
     mode: 0644
 
 - name: Apply metallb config
   kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
     state: present
-    src: metallb-system.config.yaml
+    src: /tmp/metallb.config.yaml
+
+- name: Download metallb
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/metallb/metallb/v{{ versions.metallb }}/manifests/metallb.yaml
+    dest: /tmp/metallb.yaml
+    mode: 0664
+
+- name: Apply metallb
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/metallb.yaml

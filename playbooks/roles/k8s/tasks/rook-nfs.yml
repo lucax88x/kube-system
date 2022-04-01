@@ -1,0 +1,84 @@
+---
+- name: Download rook crds
+  ansible.builtin.get_url:
+    url: https://github.com/rook/nfs/blob/v{{ versions.rook }}/cluster/examples/kubernetes/nfs/crds.yaml
+    dest: /tmp/rook.crds.yaml
+    mode: 0664
+
+- name: Apply rook crds
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/rook.crds.yaml
+
+- name: Download rook operator
+  ansible.builtin.get_url:
+    url: https://github.com/rook/nfs/blob/v{{ versions.rook }}/cluster/examples/kubernetes/nfs/operator.yaml
+    dest: /tmp/rook.operator.yaml
+    mode: 0664
+
+- name: Apply rook operator
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/rook.operator.yaml
+
+- name: Download rook webhook
+  ansible.builtin.get_url:
+    url: https://github.com/rook/nfs/blob/v{{ versions.rook }}/cluster/examples/kubernetes/nfs/webhook.yaml
+    dest: /tmp/rook.webhook.yaml
+    mode: 0664
+
+- name: Apply rook webhook
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/rook.webhook.yaml
+
+- name: Create rook security policies
+  ansible.builtin.template:
+    src: rook.psp.j2
+    dest: /tmp/rook.psp.yaml
+    mode: 0644
+
+- name: Apply rook security policies
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/rook.psp.yaml
+
+- name: Create rook rbac
+  ansible.builtin.template:
+    src: rook.rbac.j2
+    dest: /tmp/rook.rbac.yaml
+    mode: 0644
+
+- name: Apply rook rbac
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/rook.rbac.yaml
+
+- name: Create rook nfs-server
+  ansible.builtin.template:
+    src: rook.nfs-xfs.j2
+    dest: /tmp/rook.nfs-xfs.yaml
+    mode: 0644
+
+- name: Apply rook nfs-xfs
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/rook.nfs-xfs.yaml
+
+- name: Create rook sc
+  ansible.builtin.template:
+    src: rook.sc.j2
+    dest: /tmp/rook.sc.yaml
+    mode: 0644
+
+- name: Apply rook sc
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/rook.sc.yaml

@@ -15,7 +15,6 @@ add 192.168.56.10 local.k8s to /etc/hosts
 yarn ansible:install
 
 pip3 install ipython netaddr
-pip3 install kubernetes
 ```
 
 ### create the servers

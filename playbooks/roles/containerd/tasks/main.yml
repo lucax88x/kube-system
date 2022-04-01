@@ -13,25 +13,24 @@
       - containerd.io
     state: present
 
-# TODO use template
+- name: Configure containerd.conf
+  ansible.builtin.template:
+    src: containerd.conf.j2
+    dest: /etc/modules-load.d/containerd.conf
+    mode: 0644
+
 - name: Configure containerd
   ansible.builtin.shell:
     cmd: |
-      cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
-      overlay
-      br_netfilter
-      EOF
-
       sudo modprobe overlay
       sudo modprobe br_netfilter
-
-      # Setup required sysctl params, these persist across reboots.
-      cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
-      net.bridge.bridge-nf-call-iptables  = 1
-      net.ipv4.ip_forward                 = 1
-      net.bridge.bridge-nf-call-ip6tables = 1
-      EOF
   changed_when: false
+
+- name: Configure kubernetes-cri
+  ansible.builtin.template:
+    src: 99-kubernetes-cri.j2
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    mode: 0644
 
 - name: Apply sysctl params without reboot
   ansible.builtin.command:
@@ -44,6 +43,11 @@
       sudo mkdir -p /etc/containerd
       containerd config default | sudo tee /etc/containerd/config.toml
   changed_when: false
+
+- name: Enable containerd service
+  ansible.builtin.systemd:
+    name: containerd
+    enabled: true
 
 - name: Restart containerd service
   ansible.builtin.systemd:

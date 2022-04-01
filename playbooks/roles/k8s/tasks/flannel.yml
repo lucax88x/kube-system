@@ -1,0 +1,12 @@
+---
+- name: Download flannel
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+    dest: /tmp/flannel.yaml
+    mode: 0664
+
+- name: Apply flannel
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/flannel.yaml

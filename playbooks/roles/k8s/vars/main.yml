@@ -1,3 +1,5 @@
 ---
-server_ip_address: "{{ ansible_all_ipv4_addresses | last }}"
-metallb_ip_range: "{{ ansible_all_ipv4_addresses | last }}"
+kubeconfig_path: "/etc/kubernetes/admin.conf"
+versions:
+  metallb: 0.12.1
+  rook: 1.7.3

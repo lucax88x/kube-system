@@ -24,7 +24,7 @@
 
 - name: Reload firewalld
   ansible.builtin.command: firewall-cmd --reload
-  changed_when: true
+  changed_when: false
 
 - name: Reload firewalld service
   ansible.builtin.systemd:
@@ -39,16 +39,20 @@
     path: /etc/kubernetes/admin.conf
   register: k8s_admin_conf
 
-# TODO: use server range
 # TODO use config file instead of parameters
 - name: Initialize the cluster if not initialized
   ansible.builtin.shell: |
     kubeadm init \
     --apiserver-advertise-address="{{ server_ip_address }}" \
-    --pod-network-cidr=192.168.0.0/16
+    --pod-network-cidr="10.244.0.0/16"
   register: result
   changed_when: result.stdout.find("Your Kubernetes master has initialized successfully!") != -1
   when: not k8s_admin_conf.stat.exists
+
+- name: Check admin.conf file exists after init.
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: k8s_admin_conf
 
 - name: Check kube.conf file exists.
   ansible.builtin.stat:

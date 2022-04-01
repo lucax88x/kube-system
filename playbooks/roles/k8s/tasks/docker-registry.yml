@@ -1,0 +1,21 @@
+---
+- name: Add twuni repo
+  kubernetes.core.helm_repository:
+    repo_name: twuni
+    repo_url: https://helm.twun.io
+
+- name: Deploy latest version of docker-registry
+  kubernetes.core.helm:
+    name: registry
+    kubeconfig: "{{ kubeconfig_path }}"
+    chart_ref: twuni/docker-registry
+    update_repo_cache: true
+    release_namespace: registry
+    create_namespace: true
+    release_values:
+      ingress:
+        enabled: true
+        # ingress.path	Ingress service path	/
+        # ingress.hosts	Ingress hostnames	[]
+        # ingress.tls	Ingress TLS configuration (YAML)	[]
+        className: traefik

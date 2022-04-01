@@ -1,3 +1,5 @@
 ---
+roles:
+  - gantsign.helm
 collections:
   - kubernetes.core
