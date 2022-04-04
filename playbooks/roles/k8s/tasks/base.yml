@@ -2,3 +2,9 @@
 - name: Install required python package
   ansible.builtin.pip:
     name: kubernetes
+
+- name: Add git
+  ansible.builtin.dnf:
+    name:
+      - git
+    state: present

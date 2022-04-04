@@ -5,7 +5,7 @@ metadata:
   name: helloworld-service
   namespace: helloworld
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: helloworld-deployment
     namespace: helloworld
@@ -13,7 +13,6 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 31000
 ---
 # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 apiVersion: apps/v1
@@ -74,3 +73,119 @@ spec:
               name: def
       restartPolicy: Always
 ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-ingress
+  namespace: helloworld
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-stage
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: local.k8s
+      http:
+        paths:
+          - backend:
+              service:
+                name: helloworld-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - local.k8s
+      secretName: helloworld.tls
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-stage
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: lucax88x@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-stage
+    solvers:
+      - http01:
+          ingress:
+            class: traefik
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: lucax88x@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: traefik
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local.k8s
+  namespace: helloworld
+spec:
+  secretName: helloworld.tls
+  issuerRef:
+    name: letsencrypt-stage
+    kind: ClusterIssuer
+  commonName: local.k8s
+  dnsNames:
+    - local.k8s
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: nfs
+  namespace: helloworld
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "rook-nfs-share1"
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-busybox
+  namespace: helloworld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nfs-busybox
+      namespace: helloworld
+  template:
+    metadata:
+      labels:
+        name: nfs-busybox
+        namespace: helloworld
+    spec:
+      containers:
+        - image: busybox
+          command:
+            - sh
+            - -c
+            - "while true; do date > /mnt/index.html; hostname >> /mnt/index.html; sleep $(($RANDOM % 5 + 5)); done"
+          imagePullPolicy: IfNotPresent
+          name: busybox
+          volumeMounts:
+            - name: my-pvc-nfs
+              mountPath: "/mnt"
+      volumes:
+        - name: my-pvc-nfs
+          persistentVolumeClaim:
+            claimName: nfs

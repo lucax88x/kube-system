@@ -1,84 +1,77 @@
 ---
-- name: Download rook crds
+- name: Download local-path-storage provisioner
   ansible.builtin.get_url:
-    url: https://github.com/rook/nfs/blob/v{{ versions.rook }}/cluster/examples/kubernetes/nfs/crds.yaml
-    dest: /tmp/rook.crds.yaml
+    url: https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+    dest: /tmp/local-path-storage.yaml
     mode: 0664
+
+- name: Apply local-path-storage
+  kubernetes.core.k8s:
+    kubeconfig: '{{ kubeconfig_path }}'
+    state: present
+    src: /tmp/local-path-storage.yaml
+
+- name: Checkout rook repository
+  ansible.builtin.git:
+    repo: https://github.com/rook/nfs.git
+    dest: /tmp/rook
+    single_branch: true
+    version: "v{{ versions.rook }}"
+
+- name: Set rook nfs dir fact
+  ansible.builtin.set_fact:
+    rook_nfs_dir: /tmp/rook/cluster/examples/kubernetes/nfs
 
 - name: Apply rook crds
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: /tmp/rook.crds.yaml
-
-- name: Download rook operator
-  ansible.builtin.get_url:
-    url: https://github.com/rook/nfs/blob/v{{ versions.rook }}/cluster/examples/kubernetes/nfs/operator.yaml
-    dest: /tmp/rook.operator.yaml
-    mode: 0664
+    src: "{{ rook_nfs_dir }}/crds.yaml"
 
 - name: Apply rook operator
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: /tmp/rook.operator.yaml
+    src: "{{ rook_nfs_dir }}/operator.yaml"
 
-- name: Download rook webhook
-  ansible.builtin.get_url:
-    url: https://github.com/rook/nfs/blob/v{{ versions.rook }}/cluster/examples/kubernetes/nfs/webhook.yaml
-    dest: /tmp/rook.webhook.yaml
-    mode: 0664
-
-- name: Apply rook webhook
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig_path }}"
-    state: present
-    src: /tmp/rook.webhook.yaml
-
-- name: Create rook security policies
-  ansible.builtin.template:
-    src: rook.psp.j2
-    dest: /tmp/rook.psp.yaml
-    mode: 0644
+# - name: Apply rook webhook
+#   kubernetes.core.k8s:
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     state: present
+#     src: "{{ rook_nfs_dir }}/webhook.yaml"
 
 - name: Apply rook security policies
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: /tmp/rook.psp.yaml
-
-- name: Create rook rbac
-  ansible.builtin.template:
-    src: rook.rbac.j2
-    dest: /tmp/rook.rbac.yaml
-    mode: 0644
+    src: "{{ rook_nfs_dir }}/psp.yaml"
 
 - name: Apply rook rbac
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: /tmp/rook.rbac.yaml
+    src: "{{ rook_nfs_dir }}/rbac.yaml"
 
-- name: Create rook nfs-server
+- name: Create rook nfs
   ansible.builtin.template:
-    src: rook.nfs-xfs.j2
-    dest: /tmp/rook.nfs-xfs.yaml
+    src: rook.nfs.j2
+    dest: /tmp/rook/nfs.yaml
     mode: 0644
 
-- name: Apply rook nfs-xfs
+- name: Apply rook nfs
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: /tmp/rook.nfs-xfs.yaml
+    src: /tmp/rook/nfs.yaml
 
 - name: Create rook sc
   ansible.builtin.template:
     src: rook.sc.j2
-    dest: /tmp/rook.sc.yaml
+    dest: /tmp/rook/sc.yaml
     mode: 0644
 
 - name: Apply rook sc
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: /tmp/rook.sc.yaml
+    src: /tmp/rook/sc.yaml

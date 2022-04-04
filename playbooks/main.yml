@@ -3,6 +3,8 @@
     - k8s-master
     - k8s-node-*
   become: true
+  vars_files:
+    - group_vars/environments/{{ env }}.yml
   roles:
     - base
     - k8s-structure
@@ -11,15 +13,21 @@
 
 - hosts: k8s-master
   become: true
+  vars_files:
+    - group_vars/environments/{{ env }}.yml
   roles:
     - master
 
 - hosts: k8s-node-*
   become: true
+  vars_files:
+    - group_vars/environments/{{ env }}.yml
   roles:
     - node
 
 - hosts: k8s-master
   become: true
+  vars_files:
+    - group_vars/environments/{{ env }}.yml
   roles:
     - k8s

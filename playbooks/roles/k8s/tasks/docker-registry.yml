@@ -15,7 +15,10 @@
     release_values:
       ingress:
         enabled: true
-        # ingress.path	Ingress service path	/
-        # ingress.hosts	Ingress hostnames	[]
-        # ingress.tls	Ingress TLS configuration (YAML)	[]
+        # path	Ingress service path	/
+        # hosts	Ingress hostnames	[]
+        # tls	Ingress TLS configuration (YAML)	[]
         className: traefik
+      persistence:
+        enabled: true
+        storageClass: rook-nfs-share1

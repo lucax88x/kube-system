@@ -3,3 +3,4 @@ kubeconfig_path: "/etc/kubernetes/admin.conf"
 versions:
   metallb: 0.12.1
   rook: 1.7.3
+  cert_manager: 1.7.2

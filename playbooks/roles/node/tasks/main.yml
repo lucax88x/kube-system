@@ -25,12 +25,19 @@
     name: firewalld
     state: reloaded
 
+- name: Check kubelet.conf file exists.
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: k8s_kubelet_conf
+
 - name: Copy cluster join token from master
   ansible.builtin.copy:
     src: /tmp/kubeadm-join.command
     dest: /etc/kubernetes
     mode: 0664
+  when: not k8s_kubelet_conf.stat.exists
 
 - name: Joining the cluster
   ansible.builtin.command: sh /etc/kubernetes/kubeadm-join.command
   changed_when: false
+  when: not k8s_kubelet_conf.stat.exists

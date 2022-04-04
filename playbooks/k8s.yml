@@ -1,0 +1,7 @@
+---
+- hosts: k8s-master
+  become: true
+  vars_files:
+    - group_vars/environments/{{ env }}.yml
+  roles:
+    - k8s
