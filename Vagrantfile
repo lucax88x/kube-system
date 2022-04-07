@@ -4,7 +4,6 @@
 STORAGE_IMAGE_NAME = "rockylinux/8"
 K8S_MASTER_IMAGE_NAME = "rockylinux/8"
 K8S_NODE_IMAGE_NAME = "rockylinux/8"
-NFS_DISK_SIZE = 100 #gb
 
 PUBLIC_DOMAIN = "local.k8s"
 
@@ -25,14 +24,14 @@ servers = [
         :mem => "4096",
         :cpu => "4"
     },
-    # {
-    #     :name => "k8s-node-2",
-    #     :type => "node",
-    #     :box => K8S_NODE_IMAGE_NAME,
-    #     :eth1 => "192.168.56.13",
-    #     :mem => "4096",
-    #     :cpu => "4"
-    # }
+    {
+        :name => "k8s-node-2",
+        :type => "node",
+        :box => K8S_NODE_IMAGE_NAME,
+        :eth1 => "192.168.56.13",
+        :mem => "4096",
+        :cpu => "4"
+    }
 ]
 
 IS_SINGLE_NODE = servers.length() == 1 ? "true" : "false"
@@ -57,6 +56,9 @@ Vagrant.configure("2") do |config|
             box.vm.box_version = opts[:box_version]
             box.vm.hostname = opts[:name]
             box.vm.network :private_network, ip: opts[:eth1]
+            
+            # to provision raw disks for ceph
+            # box.vm.disk :disk, size: "10GB", name: "osd"
 
             box.vm.provider "libvirt" do |libvirt|
                 libvirt.memory = opts[:mem]
@@ -73,21 +75,6 @@ Vagrant.configure("2") do |config|
                 vb.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
             end
 
-            if opts[:type] == "master"
-                # box.vm.provider "virtualbox" do |vb|
-                #     unless File.exist?("nfs-disk-0.vdi")
-                #         vb.customize [ "storagectl", :id,"--name", "VboxSata", "--add", "sata" ]
-                #         vb.customize [ "createmedium", "--filename", "nfs-disk-0.vdi", "--size", 1024 * NFS_DISK_SIZE ]
-                #         vb.customize [ "storageattach", :id, "--storagectl", "VboxSata", "--port", 3, "--device", 0, "--type", "hdd", "--medium", "nfs-disk-0.vdi" ]
-                #     end
-                # end
-                # box.vm.provider "libvirt" do |libvirt|
-                #     libvirt.storage :file, :size => '20G', :path => 'my_shared_disk.img', :allow_existing => true, :shareable => true, :type => 'raw'
-                # end
-
-                box.vm.network "forwarded_port", guest: 6443, host: 6443
-            else
-            end
             if machine_id == servers.length 
                 config.vm.provision "ansible" do |ansible|
                   # ansible.verbose = "v"

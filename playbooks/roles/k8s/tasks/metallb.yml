@@ -7,7 +7,7 @@
 
 - name: Apply metallb namespace
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
     src: /tmp/metallb.namespace.yaml
 
@@ -19,7 +19,7 @@
 
 - name: Apply metallb config
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
     src: /tmp/metallb.config.yaml
 
@@ -31,6 +31,6 @@
 
 - name: Apply metallb
   kubernetes.core.k8s:
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     state: present
     src: /tmp/metallb.yaml

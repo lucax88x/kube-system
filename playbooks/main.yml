@@ -9,7 +9,7 @@
     - base
     - k8s-structure
     - containerd
-    - nfs-client
+    # - nfs-client
 
 - hosts: k8s-master
   become: true
@@ -25,9 +25,9 @@
   roles:
     - node
 
-- hosts: k8s-master
-  become: true
-  vars_files:
-    - group_vars/environments/{{ env }}.yml
-  roles:
-    - k8s
+# - hosts: k8s-master
+#   become: true
+#   vars_files:
+#     - group_vars/environments/{{ env }}.yml
+#   roles:
+#     - k8s

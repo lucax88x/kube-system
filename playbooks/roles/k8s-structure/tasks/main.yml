@@ -39,11 +39,25 @@
     sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
   changed_when: false
 
+- name: Check if kubelet config doesnt have node_ip
+  ansible.builtin.shell: grep -c "^KUBELET_EXTRA_ARGS=--node-ip" /etc/sysconfig/kubelet || true
+  register: kubelet_has_node_ip
+  changed_when: false
+
+- name: Set node-ip of kubelet if not already set
+  ansible.builtin.template:
+    src: kubelet.j2
+    dest: /etc/sysconfig/kubelet
+    mode: 0644
+  when: kubelet_has_node_ip.stdout == "0"
+
 - name: Enable kubelet service
   ansible.builtin.systemd:
     name: kubelet
     enabled: true
 
-# # set node-ip
-# IP_ADDR=$(ifconfig eth1 | grep netmask | awk '{print $2}'| cut -f2 -d:)
-# sudo sed -i "/^[^#]*KUBELET_EXTRA_ARGS=/c\KUBELET_EXTRA_ARGS=--node-ip=$IP_ADDR" /etc/sysconfig/kubelet
+- name: Restart kubelet service
+  ansible.builtin.systemd:
+    name: kubelet
+    state: restarted
+    daemon_reload: true

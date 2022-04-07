@@ -1,3 +1,6 @@
 ---
 server_network_adapter: "eth1"
 metallb_ip_pool: "192.168.56.50-192.168.56.51"
+domains:
+  registry: registry.k8s.local
+  public: k8s.local

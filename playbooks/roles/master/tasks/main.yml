@@ -16,6 +16,17 @@
     # if you want to expose nodeport
     # 30000-32767/tcp
 
+- name: Enable metallb specific ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop:
+    - 7472/tcp
+    - 7472/udp
+    - 7946/tcp
+    - 7946/udp
+
 - name: Enable masquerade
   ansible.posix.firewalld:
     masquerade: true

@@ -1,0 +1,33 @@
+---
+- name: Add harbor repo
+  kubernetes.core.helm_repository:
+    repo_name: harbor
+    repo_url: https://helm.goharbor.io
+
+- name: Deploy latest version of harbor
+  kubernetes.core.helm:
+    name: harbor
+    kubeconfig: "{{ kubeconfig_path }}"
+    chart_ref: harbor/harbor
+    update_repo_cache: true
+    release_namespace: harbor
+    create_namespace: true
+    values:
+      expose:
+        ingress:
+          hosts:
+            core: todo.org
+      persistence:
+        persistentVolumeClaim:
+          registry:
+            storageClass: "{{ default_storage_class }}"
+          chartmuseum:
+            storageClass: "{{ default_storage_class }}"
+          jobservice:
+            storageClass: "{{ default_storage_class }}"
+          database:
+            storageClass: "{{ default_storage_class }}"
+          redis:
+            storageClass: "{{ default_storage_class }}"
+          trivy:
+            storageClass: "{{ default_storage_class }}"

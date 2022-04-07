@@ -6,6 +6,8 @@
 - include_tasks: metallb.yml
 - include_tasks: cert-manager.yml
 - include_tasks: traefik.yml
-- include_tasks: rook-nfs.yml
-- include_tasks: docker-registry.yml
 - include_tasks: prometheus.yml
+- include_tasks: rook-nfs.yml
+# - include_tasks: rook-ceph.yml
+- include_tasks: docker-registry.yml
+# - include_tasks: harbor.yml

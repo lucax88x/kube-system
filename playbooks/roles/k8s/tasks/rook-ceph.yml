@@ -13,65 +13,41 @@
 
 - name: Checkout rook repository
   ansible.builtin.git:
-    repo: https://github.com/rook/nfs.git
+    repo: https://github.com/rook/rook.git
     dest: /tmp/rook
     single_branch: true
     version: "v{{ versions.rook }}"
 
-- name: Set rook nfs dir fact
+- name: Set rook ceph dir fact
   ansible.builtin.set_fact:
-    rook_nfs_dir: /tmp/rook/cluster/examples/kubernetes/nfs
+    rook_ceph_dir: /tmp/rook/cluster/examples/kubernetes/ceph
 
 - name: Apply rook crds
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: "{{ rook_nfs_dir }}/crds.yaml"
+    src: "{{ rook_ceph_dir }}/crds.yaml"
+
+- name: Apply rook common
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: "{{ rook_ceph_dir }}/common.yaml"
 
 - name: Apply rook operator
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: "{{ rook_nfs_dir }}/operator.yaml"
-#
-# - name: Apply rook webhook
-#   kubernetes.core.k8s:
-#     kubeconfig: "{{ kubeconfig_path }}"
-#     state: present
-#     src: "{{ rook_nfs_dir }}/webhook.yaml"
+    src: "{{ rook_ceph_dir }}/operator.yaml"
 
-- name: Apply rook security policies
+- name: Apply rook cluster
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: "{{ rook_nfs_dir }}/psp.yaml"
+    src: "{{ rook_ceph_dir }}/cluster.yaml"
 
-- name: Apply rook rbac
+- name: Apply rook storageclass
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
-    src: "{{ rook_nfs_dir }}/rbac.yaml"
-
-- name: Create rook nfs
-  ansible.builtin.template:
-    src: rook.nfs.j2
-    dest: /tmp/rook/nfs.yaml
-    mode: 0644
-
-- name: Apply rook nfs
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig_path }}"
-    state: present
-    src: /tmp/rook/nfs.yaml
-
-- name: Create rook sc
-  ansible.builtin.template:
-    src: rook.sc.j2
-    dest: /tmp/rook/sc.yaml
-    mode: 0644
-
-- name: Apply rook sc
-  kubernetes.core.k8s:
-    kubeconfig: "{{ kubeconfig_path }}"
-    state: present
-    src: /tmp/rook/sc.yaml
+    src: "{{ rook_ceph_dir }}/csi/rbd/storageclass.yaml"

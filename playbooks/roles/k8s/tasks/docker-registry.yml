@@ -12,13 +12,21 @@
     update_repo_cache: true
     release_namespace: registry
     create_namespace: true
-    release_values:
+    values:
       ingress:
-        enabled: true
-        # path	Ingress service path	/
-        # hosts	Ingress hostnames	[]
-        # tls	Ingress TLS configuration (YAML)	[]
-        className: traefik
+        enabled: false
       persistence:
         enabled: true
-        storageClass: rook-nfs-share1
+        storageClass: "{{ default_storage_class }}"
+
+- name: Create docker-registry ignress
+  ansible.builtin.template:
+    src: docker-registry.ingress-route.j2
+    dest: /tmp/docker-registry.ingress-route.yaml
+    mode: 0644
+
+- name: Apply docker-registry ingress
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/docker-registry.ingress-route.yaml
