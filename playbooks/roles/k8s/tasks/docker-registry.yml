@@ -18,9 +18,6 @@
       persistence:
         enabled: true
         storageClass: "{{ default_storage_class }}"
-      secrets:
-        htpasswd: |
-          pfb:$2y$05$53Qh5KSuDDj5OdCNrbc43OBjneH7XS65GnmyQrGf89648iw5e3faq
 
 - name: Create docker-registry certificate
   ansible.builtin.template:

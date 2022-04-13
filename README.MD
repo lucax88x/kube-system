@@ -30,4 +30,5 @@ yarn vagrant:k8s:copy-config
 ```
 
 ### how to add user to registry
-docker run --rm marcnuri/htpasswd -Bbn desiredUser desiredPassword | base64 -w 0 | xargs -I #0 kubectl patch secret registry -n registry --patch '{"data": { "HTPASSWD": "#0"}}'
+docker run --entrypoint htpasswd httpd:2 -Bbn desiredUser desiredPassword | openssl base64
+then copy to docker registry secrety
