@@ -9,7 +9,7 @@ PUBLIC_DOMAIN = "local.k8s"
 
 servers = [
     {
-        :name => "k8s-master",
+        :name => "k8s-master-1",
         :type => "master",
         :box => K8S_MASTER_IMAGE_NAME,
         :eth1 => "192.168.56.11",
@@ -31,7 +31,15 @@ servers = [
         :eth1 => "192.168.56.13",
         :mem => "4096",
         :cpu => "4"
-    }
+    },
+    # {
+    #     :name => "k8s-node-3",
+    #     :type => "node",
+    #     :box => K8S_NODE_IMAGE_NAME,
+    #     :eth1 => "192.168.56.14",
+    #     :mem => "4096",
+    #     :cpu => "4"
+    # }
 ]
 
 IS_SINGLE_NODE = servers.length() == 1 ? "true" : "false"

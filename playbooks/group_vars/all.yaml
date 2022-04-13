@@ -2,4 +2,11 @@
 server_ip: "{{ 'ansible_' + server_network_adapter }}"
 server_ip_address: "{{ vars[server_ip].ipv4.address }}"
 server_ip_range: "{{ server_ip_address | ansible.netcommon.ipsubnet(24, 0) }}"
-default_storage_class: "rook-nfs-share1"
+# default_storage_class: "rook-ceph-block"
+# default_storage_class: "rook-nfs-share1"
+default_storage_class: "longhorn"
+master_node_count: 1
+worker_node_count: 2
+cert_manager:
+  stage: https://acme-staging-v02.api.letsencrypt.org/directory
+  prod: https://acme-v02.api.letsencrypt.org/directory

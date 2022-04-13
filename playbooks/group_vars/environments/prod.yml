@@ -1,0 +1,6 @@
+---
+server_network_adapter: "eth0"
+metallb_ip_pool: "185.245.182.51-185.245.182.51"
+domains:
+  registry: registry.playfeedback.com
+  public: playfeedback.com

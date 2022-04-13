@@ -7,8 +7,13 @@
 - name: Deploy latest version of traefik
   kubernetes.core.helm:
     name: traefik
-    kubeconfig: '{{ kubeconfig_path }}'
+    kubeconfig: "{{ kubeconfig_path }}"
     chart_ref: traefik/traefik
     update_repo_cache: true
     release_namespace: traefik
     create_namespace: true
+    values:
+      # Enable HTTPS redirection on web entrypoint
+      additionalArguments:
+        - --entryPoints.web.http.redirections.entryPoint.to: websecure
+        - --entryPoints.web.http.redirections.entryPoint.scheme: https

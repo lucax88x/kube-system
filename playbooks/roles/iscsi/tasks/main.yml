@@ -1,0 +1,12 @@
+---
+- name: Add iscsi
+  ansible.builtin.dnf:
+    name:
+      - iscsi-initiator-utils
+    state: present
+
+- name: Enable and start iscsid service
+  ansible.builtin.systemd:
+    name: iscsid
+    state: started
+    enabled: true

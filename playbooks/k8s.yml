@@ -1,5 +1,5 @@
 ---
-- hosts: k8s-master
+- hosts: k8s-master-1
   become: true
   vars_files:
     - group_vars/environments/{{ env }}.yml

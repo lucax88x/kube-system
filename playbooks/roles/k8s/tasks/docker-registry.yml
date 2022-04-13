@@ -18,8 +18,25 @@
       persistence:
         enabled: true
         storageClass: "{{ default_storage_class }}"
+      secrets:
+        htpasswd: |
+          pfb:$2y$05$53Qh5KSuDDj5OdCNrbc43OBjneH7XS65GnmyQrGf89648iw5e3faq
 
-- name: Create docker-registry ignress
+- name: Create docker-registry certificate
+  ansible.builtin.template:
+    src: docker-registry.cert.j2
+    dest: /tmp/docker-registry.cert.yaml
+    mode: 0644
+  when: env != "dev"
+
+- name: Apply docker-registry certificate
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/docker-registry.cert.yaml
+  when: env != "dev"
+
+- name: Create docker-registry ingress
   ansible.builtin.template:
     src: docker-registry.ingress-route.j2
     dest: /tmp/docker-registry.ingress-route.yaml

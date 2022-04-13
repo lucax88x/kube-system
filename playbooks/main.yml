@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - k8s-master
+    - k8s-master-*
     - k8s-node-*
   become: true
   vars_files:
@@ -9,9 +9,10 @@
     - base
     - k8s-structure
     - containerd
-    # - nfs-client
+    - nfs-client
+    - iscsi
 
-- hosts: k8s-master
+- hosts: k8s-master-*
   become: true
   vars_files:
     - group_vars/environments/{{ env }}.yml
@@ -25,7 +26,7 @@
   roles:
     - node
 
-# - hosts: k8s-master
+# - hosts: k8s-master-1
 #   become: true
 #   vars_files:
 #     - group_vars/environments/{{ env }}.yml

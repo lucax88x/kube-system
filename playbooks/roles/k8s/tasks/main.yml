@@ -7,7 +7,10 @@
 - include_tasks: cert-manager.yml
 - include_tasks: traefik.yml
 - include_tasks: prometheus.yml
-- include_tasks: rook-nfs.yml
+- include_tasks: longhorn.yml
+# - include_tasks: rook-ceph-nfs.yml
+# - include_tasks: rook-nfs.yml
+# you need RDB module on kernel for ceph
 # - include_tasks: rook-ceph.yml
 - include_tasks: docker-registry.yml
 # - include_tasks: harbor.yml

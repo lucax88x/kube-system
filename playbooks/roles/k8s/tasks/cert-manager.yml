@@ -10,15 +10,29 @@
     kubeconfig: "{{ kubeconfig_path }}"
     state: present
     src: /tmp/cert-manager.yaml
+
+- name: Download cert-manager crds
+  ansible.builtin.get_url:
+    url: "https://github.com/cert-manager/cert-manager/releases/download/v{{ versions.cert_manager }}/cert-manager.crds.yaml"
+    dest: /tmp/cert-manager.crds.yaml
+    mode: 0664
+
+- name: Apply cert-manager crds
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/cert-manager.crds.yaml
 #
-# - name: Download cert-manager crds
-#   ansible.builtin.get_url:
-#     url: "https://github.com/cert-manager/cert-manager/releases/download/v{{ versions.cert_manager }}/cert-manager.crds.yaml"
-#     dest: /tmp/cert-manager.crds.yaml
-#     mode: 0664
-#
-# - name: Apply cert-manager crds
-#   kubernetes.core.k8s:
-#     kubeconfig: "{{ kubeconfig_path }}"
-#     state: present
-#     src: /tmp/cert-manager.crds.yaml
+- name: Create cert-manager issuer
+  ansible.builtin.template:
+    src: cert-manager.cert-issuer.j2
+    dest: /tmp/cert-manager.cert-issuer.yaml
+    mode: 0644
+  when: env != "dev"
+
+- name: Apply cert-manager issuer
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: present
+    src: /tmp/cert-manager.cert-issuer.yaml
+  when: env != "dev"
