@@ -37,7 +37,7 @@
     cmd: sysctl --system
   changed_when: false
 
-- name: Create containerd configuratoin
+- name: Create containerd configuration
   ansible.builtin.shell:
     cmd: |
       sudo mkdir -p /etc/containerd

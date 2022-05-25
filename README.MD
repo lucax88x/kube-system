@@ -30,5 +30,5 @@ yarn vagrant:k8s:copy-config
 ```
 
 ### how to add user to registry
-docker run --entrypoint htpasswd httpd:2 -Bbn desiredUser desiredPassword | openssl base64
-then copy to docker registry secrety
+docker run --entrypoint htpasswd httpd:2 -Bbn desiredUser "desiredPassword" | openssl base64
+then copy to docker registry secret

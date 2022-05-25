@@ -13,7 +13,8 @@
     release_namespace: traefik
     create_namespace: true
     values:
-      # Enable HTTPS redirection on web entrypoint
       additionalArguments:
         - --entryPoints.web.http.redirections.entryPoint.to: websecure
         - --entryPoints.web.http.redirections.entryPoint.scheme: https
+        - --entryPoints.web.forwardedHeaders.trustedIPs: "127.0.0.1/32,{{ server_ip_ranger }}"
+        - --entrypoints.websecure.forwardedHeaders.trustedIPs: "127.0.0.1/32,{{ server_ip_ranger }}"
